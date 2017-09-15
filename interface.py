@@ -8,7 +8,6 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
 
 a_min, a_med, a_max = -45, 0, 45
 v_min, v_med, v_max = 100, 300, 500
-
 class QSlider(QSlider):
     def __init__(self, parent=None):
         super(QSlider, self).__init__(parent)
@@ -37,25 +36,33 @@ class QDial(QDial):
         msg = [self.nome, valor]
         print(msg)
 
+class Servo(object):
+    def __init__(self, nome):
+        super(Servo, self).__init__()
+        self.group_box = QGroupBox("Servo " + nome)
+        self.group_box.setCheckable(True)
+        self.group_box.setChecked(True)
+
+        self.dial = QDial()
+        self.dial.nome = nome
+
+        self.slider = QSlider(Qt.Horizontal)
+        self.slider.nome = nome
+
+        layout = QVBoxLayout()
+        layout.addWidget(self.dial)
+        layout.addWidget(self.slider)
+        self.group_box.setLayout(layout)
+
 class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         super(WidgetGallery, self).__init__(parent)
-        self.width = 1020
-        self.height = 780
 
-        self.originalPalette = QApplication.palette()
-        styleComboBox = QComboBox()
-        styleComboBox.addItems(QStyleFactory.keys())
-
-
-        self.criar_sliders()
-        self.criar_dials()
-
-        self.servo1()
-        self.servo2()
-        self.servo3()
-        self.servo4()
-        self.servo5()
+        self.servo1 = Servo("1")
+        self.servo2 = Servo("2")
+        self.servo3 = Servo("3")
+        self.servo4 = Servo("4")
+        self.servo5 = Servo("5")
 
         label = QLabel(self)
         pixmap = QPixmap('representacao.png')
@@ -63,96 +70,18 @@ class WidgetGallery(QDialog):
 
         mainLayout = QGridLayout()
         mainLayout.addWidget(label, 1, 0)
-        mainLayout.addWidget(self.servo1, 1, 1)
-        mainLayout.addWidget(self.servo2, 1, 2)
-        mainLayout.addWidget(self.servo3, 2, 0)
-        mainLayout.addWidget(self.servo4, 2, 1)
-        mainLayout.addWidget(self.servo5, 2, 2)
+        mainLayout.addWidget(self.servo1.group_box, 1, 1)
+        mainLayout.addWidget(self.servo2.group_box, 1, 2)
+        mainLayout.addWidget(self.servo3.group_box, 2, 0)
+        mainLayout.addWidget(self.servo4.group_box, 2, 1)
+        mainLayout.addWidget(self.servo5.group_box, 2, 2)
         self.setLayout(mainLayout)
 
         self.setWindowTitle("Cinemática Direta")
 
-
-    def criar_sliders(self):
-        self.slider1 = QSlider(Qt.Horizontal)
-        self.slider1.nome = "1"
-        self.slider2 = QSlider(Qt.Horizontal)
-        self.slider2.nome = "2"
-        self.slider3 = QSlider(Qt.Horizontal)
-        self.slider3.nome = "3"
-        self.slider4 = QSlider(Qt.Horizontal)
-        self.slider4.nome = "4"
-        self.slider5 = QSlider(Qt.Horizontal)
-        self.slider5.nome = "5"
-
-    def criar_dials(self):
-        self.dial1 = QDial()
-        self.dial1.nome = "1"
-        self.dial2 = QDial()
-        self.dial2.nome = "2"
-        self.dial3 = QDial()
-        self.dial3.nome = "3"
-        self.dial4 = QDial()
-        self.dial4.nome = "4"
-        self.dial5 = QDial()
-        self.dial5.nome = "5"
-
-    def servo1(self):
-        self.servo1 = QGroupBox("Servo 1")
-        self.servo1.setCheckable(True)
-        self.servo1.setChecked(True)
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.dial1)
-        layout.addWidget(self.slider1)
-        self.servo1.setLayout(layout)
-
-    def servo2(self):
-        self.servo2 = QGroupBox("Servo 2")
-        self.servo2.setCheckable(True)
-        self.servo2.setChecked(True)
-
-        layout = QGridLayout()
-        layout.addWidget(self.dial2)
-        layout.addWidget(self.slider2)
-        self.servo2.setLayout(layout)
-
-    def servo3(self):
-        self.servo3 = QGroupBox("Servo 3")
-        self.servo3.setCheckable(True)
-        self.servo3.setChecked(True)
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.dial3)
-        layout.addWidget(self.slider3)
-        self.servo3.setLayout(layout)
-
-    def servo4(self):
-        self.servo4 = QGroupBox("Servo 4")
-        self.servo4.setCheckable(True)
-        self.servo4.setChecked(True)
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.dial4)
-        layout.addWidget(self.slider4)
-        self.servo4.setLayout(layout)
-
-    def servo5(self):
-        self.servo5 = QGroupBox("Servo 5")
-        self.servo5.setCheckable(True)
-        self.servo5.setChecked(True)
-
-        layout = QVBoxLayout()
-        layout.addWidget(self.dial5)
-        layout.addWidget(self.slider5)
-        self.servo5.setLayout(layout)
-
-
-if __name__ == '__main__':
-
     import sys
-
     app = QApplication(sys.argv)
+    if __name__ == '__main__':
     gallery = WidgetGallery()
     gallery.show()
     sys.exit(app.exec_())
