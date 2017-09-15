@@ -1,4 +1,4 @@
-from PyQt5.QtCore import QDateTime, Qt, QTimer
+from PyQt5.QtCore import QDateTime, Qt, QTimer, QObject, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
@@ -6,21 +6,47 @@ from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
         QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
         QVBoxLayout, QWidget)
 
+a_min, a_med, a_max = -45, 0, 45
+v_min, v_med, v_max = 100, 300, 500
+
+class QSlider(QSlider):
+    def __init__(self, parent=None):
+        super(QSlider, self).__init__(parent)
+        self.setMinimum(v_min)
+        self.setMaximum(v_max)
+        self.setValue(v_med)
+        self.setTickPosition(QSlider.TicksBelow)
+        self.valueChanged.connect(self.changed)
+
+    nome = ''
+    def changed(self, valor):
+        msg = [self.nome, valor]
+        print(msg)
+
+class QDial(QDial):
+    def __init__(self, parent=None):
+        super(QDial, self).__init__(parent)
+        self.setValue(a_med)
+        self.setMinimum(a_min)
+        self.setMaximum(a_max)
+        self.setNotchesVisible(True)
+        self.valueChanged.connect(self.changed)
+
+    nome = ''
+    def changed(self, valor):
+        msg = [self.nome, valor]
+        print(msg)
 
 class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         super(WidgetGallery, self).__init__(parent)
+        self.width = 1020
+        self.height = 780
 
         self.originalPalette = QApplication.palette()
-
         styleComboBox = QComboBox()
         styleComboBox.addItems(QStyleFactory.keys())
 
-        styleLabel = QLabel("&Style:")
-        styleLabel.setBuddy(styleComboBox)
-
-        self.useStylePaletteCheckBox = QCheckBox("&Use style's standard palette")
-        self.useStylePaletteCheckBox.setChecked(True)
 
         self.criar_sliders()
         self.criar_dials()
@@ -30,7 +56,6 @@ class WidgetGallery(QDialog):
         self.servo3()
         self.servo4()
         self.servo5()
-
 
         label = QLabel(self)
         pixmap = QPixmap('representacao.png')
@@ -47,66 +72,30 @@ class WidgetGallery(QDialog):
 
         self.setWindowTitle("Cinemática Direta")
 
+
     def criar_sliders(self):
         self.slider1 = QSlider(Qt.Horizontal)
-        self.slider1.setMinimum(10)
-        self.slider1.setMaximum(30)
-        self.slider1.setValue(20)
-        self.slider1.setTickPosition(QSlider.TicksBelow)
-        self.slider1.setTickInterval(5)
-
+        self.slider1.nome = "1"
         self.slider2 = QSlider(Qt.Horizontal)
-        self.slider2.setMinimum(10)
-        self.slider2.setMaximum(30)
-        self.slider2.setValue(20)
-        self.slider2.setTickPosition(QSlider.TicksBelow)
-        self.slider2.setTickInterval(5)
-
+        self.slider2.nome = "2"
         self.slider3 = QSlider(Qt.Horizontal)
-        self.slider3.setMinimum(10)
-        self.slider3.setMaximum(30)
-        self.slider3.setValue(20)
-        self.slider3.setTickPosition(QSlider.TicksBelow)
-        self.slider3.setTickInterval(5)
-
+        self.slider3.nome = "3"
         self.slider4 = QSlider(Qt.Horizontal)
-        self.slider4.setMinimum(10)
-        self.slider4.setMaximum(30)
-        self.slider4.setValue(20)
-        self.slider4.setTickPosition(QSlider.TicksBelow)
-        self.slider4.setTickInterval(5)
-
+        self.slider4.nome = "4"
         self.slider5 = QSlider(Qt.Horizontal)
-        self.slider5.setMinimum(10)
-        self.slider5.setMaximum(30)
-        self.slider5.setValue(20)
-        self.slider5.setTickPosition(QSlider.TicksBelow)
-        self.slider5.setTickInterval(5)
+        self.slider5.nome = "5"
 
     def criar_dials(self):
         self.dial1 = QDial()
-        self.dial1.setValue(30)
-        self.dial1.setNotchesVisible(True)
-
+        self.dial1.nome = "1"
         self.dial2 = QDial()
-        self.dial2.setValue(30)
-        self.dial2.setNotchesVisible(True)
-
+        self.dial2.nome = "2"
         self.dial3 = QDial()
-        self.dial3.setValue(30)
-        self.dial3.setNotchesVisible(True)
-
+        self.dial3.nome = "3"
         self.dial4 = QDial()
-        self.dial4.setValue(30)
-        self.dial4.setNotchesVisible(True)
-
+        self.dial4.nome = "4"
         self.dial5 = QDial()
-        self.dial5.setValue(30)
-        self.dial5.setNotchesVisible(True)
-
-
-    def valuechange(self, *args):
-        print (self.sl)
+        self.dial5.nome = "5"
 
     def servo1(self):
         self.servo1 = QGroupBox("Servo 1")
@@ -114,8 +103,8 @@ class WidgetGallery(QDialog):
         self.servo1.setChecked(True)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.slider1)
         layout.addWidget(self.dial1)
+        layout.addWidget(self.slider1)
         self.servo1.setLayout(layout)
 
     def servo2(self):
@@ -124,8 +113,8 @@ class WidgetGallery(QDialog):
         self.servo2.setChecked(True)
 
         layout = QGridLayout()
-        layout.addWidget(self.slider2)
         layout.addWidget(self.dial2)
+        layout.addWidget(self.slider2)
         self.servo2.setLayout(layout)
 
     def servo3(self):
@@ -134,8 +123,8 @@ class WidgetGallery(QDialog):
         self.servo3.setChecked(True)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.slider3)
         layout.addWidget(self.dial3)
+        layout.addWidget(self.slider3)
         self.servo3.setLayout(layout)
 
     def servo4(self):
@@ -144,18 +133,18 @@ class WidgetGallery(QDialog):
         self.servo4.setChecked(True)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.slider4)
         layout.addWidget(self.dial4)
+        layout.addWidget(self.slider4)
         self.servo4.setLayout(layout)
 
     def servo5(self):
         self.servo5 = QGroupBox("Servo 5")
-        self.servo4.setCheckable(True)
-        self.servo4.setChecked(True)
+        self.servo5.setCheckable(True)
+        self.servo5.setChecked(True)
 
         layout = QVBoxLayout()
-        layout.addWidget(self.slider5)
         layout.addWidget(self.dial5)
+        layout.addWidget(self.slider5)
         self.servo5.setLayout(layout)
 
 
