@@ -61,6 +61,7 @@ class Servo(object):
             'Posicionamento inválido'
 
         self._pos = pos
+        self.alterado = True
 
         if self._callback:
             self._callback(self)
@@ -232,7 +233,7 @@ class Servo(object):
         :param comando: str
         :return:
         """
-        parametros = re.match(r'#(?P<porta>\d+)P(?P<posicao>\d+)S(?P<velocidade>\d+)*$',
+        parametros = re.match(r'#(?P<porta>\d+)P(?P<posicao>\d+)S*(?P<velocidade>\d+)*$',
                               comando).groupdict(None)
 
         assert parametros, \
@@ -329,7 +330,7 @@ class SSC32(object):
         :param taxa_transferencia: Taxa de transferência da conexão serial
         :return:
         """
-        self._serial = serial.Serial(porta, taxa_transferencia)
+        self._serial = serial.Serial(porta, taxa_transferencia, exclusive=True)
         self._conectado = True
 
     @property
@@ -406,7 +407,8 @@ class SSC32(object):
         :param commit: Indica se o comando deve ser executado mesmo que o autocommit esteja falso
         """
         if self._conectado and (self.autocommit or commit):
-            self._serial.write(self.__comando)
+            # print('{0}\r'.format(self.__comando).encode())
+            self._serial.write((self.__comando + '\r').encode())
 
     def commit(self):
         """
