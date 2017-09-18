@@ -1,13 +1,11 @@
 from PyQt5.QtCore import QDateTime, Qt, QTimer, QObject, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import (QApplication, QCheckBox, QComboBox, QDateTimeEdit,
-        QDial, QDialog, QGridLayout, QGroupBox, QHBoxLayout, QLabel, QLineEdit,
-        QProgressBar, QPushButton, QRadioButton, QScrollBar, QSizePolicy,
-        QSlider, QSpinBox, QStyleFactory, QTableWidget, QTabWidget, QTextEdit,
-        QVBoxLayout, QWidget)
+from PyQt5.QtWidgets import (QApplication, QDialog, QDial, QGridLayout, QGroupBox,
+    QHBoxLayout, QLabel, QPushButton, QSlider, QVBoxLayout, QWidget)
 
 a_min, a_med, a_max = -45, 0, 45
 v_min, v_med, v_max = 100, 300, 500
+servos = ["1", "2", "3", "4", "5"]
 class QSlider(QSlider):
     def __init__(self, parent=None):
         super(QSlider, self).__init__(parent)
@@ -77,11 +75,13 @@ class WidgetGallery(QDialog):
         mainLayout.addWidget(self.servo5.group_box, 2, 2)
         self.setLayout(mainLayout)
 
-        self.setWindowTitle("Cinemática Direta")
+        self.setWindowTitle("Cinematica Direta")
 
+
+if __name__ == '__main__':
     import sys
+
     app = QApplication(sys.argv)
-    if __name__ == '__main__':
     gallery = WidgetGallery()
     gallery.show()
     sys.exit(app.exec_())
