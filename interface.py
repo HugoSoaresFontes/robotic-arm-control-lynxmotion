@@ -9,7 +9,7 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QDial, QGridLayout, QGroupBo
 a_min, a_med, a_max = -45, 0, 45
 v_min, v_med, v_max = 100, 300, 500
 servos = ["1", "2", "3", "4", "5"]
-braco = Braco()
+braco = Braco(porta='/dev/ttyS0', autocommit=True)
 
 class QSlider(QSlider):
     def __init__(self, setup, parent=None):
@@ -65,6 +65,8 @@ class Servo(object):
 class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         super(WidgetGallery, self).__init__(parent)
+
+        braco.commit()
 
         self.servo1 = Servo(braco.servos[0])
         self.servo2 = Servo(braco.servos[1])
