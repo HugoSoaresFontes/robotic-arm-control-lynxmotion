@@ -1,51 +1,61 @@
+from hermes import Braco
+
 from PyQt5.QtCore import QDateTime, Qt, QTimer, QObject, pyqtSignal
 from PyQt5.QtGui import QIcon, QPixmap
 from PyQt5.QtWidgets import (QApplication, QDialog, QDial, QGridLayout, QGroupBox,
     QHBoxLayout, QLabel, QPushButton, QSlider, QVBoxLayout, QWidget)
 
+
 a_min, a_med, a_max = -45, 0, 45
 v_min, v_med, v_max = 100, 300, 500
 servos = ["1", "2", "3", "4", "5"]
+braco = Braco()
+
 class QSlider(QSlider):
-    def __init__(self, parent=None):
+    def __init__(self, setup, parent=None):
         super(QSlider, self).__init__(parent)
         self.setMinimum(v_min)
         self.setMaximum(v_max)
         self.setValue(v_med)
         self.setTickPosition(QSlider.TicksBelow)
         self.valueChanged.connect(self.changed)
+        self._servo = setup
 
     nome = ''
     def changed(self, valor):
         msg = [self.nome, valor]
-        print(msg)
+        self._servo.velocidade = valor
 
 class QDial(QDial):
-    def __init__(self, parent=None):
+    def __init__(self, setup, parent=None):
         super(QDial, self).__init__(parent)
+        self.nome = setup.nome
+        self._servo = setup
         self.setValue(a_med)
-        self.setMinimum(a_min)
-        self.setMaximum(a_max)
+        self.setMinimum(setup.angulo_minimo)
+        self.setMaximum(setup.angulo_maximo)
         self.setNotchesVisible(True)
         self.valueChanged.connect(self.changed)
 
     nome = ''
     def changed(self, valor):
-        msg = [self.nome, valor]
-        print(msg)
+        print(valor)
+        try:
+            self._servo.angulo = valor
+        except:
+            print('Posicionamento inválido')
 
 class Servo(object):
-    def __init__(self, nome):
+    def __init__(self, setup):
         super(Servo, self).__init__()
-        self.group_box = QGroupBox("Servo " + nome)
+        self.group_box = QGroupBox('{0} ({1})'.format(setup.nome, setup.descricao))
         self.group_box.setCheckable(True)
         self.group_box.setChecked(True)
 
-        self.dial = QDial()
-        self.dial.nome = nome
+        self.dial = QDial(setup)
 
-        self.slider = QSlider(Qt.Horizontal)
-        self.slider.nome = nome
+        self.slider = QSlider(setup, Qt.Horizontal)
+        self.slider.nome = '{0} ({1})'.format(setup.nome, setup.descricao)
 
         layout = QVBoxLayout()
         layout.addWidget(self.dial)
@@ -56,11 +66,11 @@ class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         super(WidgetGallery, self).__init__(parent)
 
-        self.servo1 = Servo("1")
-        self.servo2 = Servo("2")
-        self.servo3 = Servo("3")
-        self.servo4 = Servo("4")
-        self.servo5 = Servo("5")
+        self.servo1 = Servo(braco.servos[0])
+        self.servo2 = Servo(braco.servos[1])
+        self.servo3 = Servo(braco.servos[2])
+        self.servo4 = Servo(braco.servos[3])
+        self.servo5 = Servo(braco.servos[4])
 
         label = QLabel(self)
         pixmap = QPixmap('representacao.png')
