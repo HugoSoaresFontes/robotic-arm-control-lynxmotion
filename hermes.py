@@ -5,6 +5,9 @@ import sys
 import serial
 import yaml
 from typing import Callable
+from abc import ABCMeta, abstractmethod, abstractproperty
+import numpy as np
+import math
 
 
 class Servo(object):
@@ -452,7 +455,7 @@ class SSC32(object):
         configuracoes = yaml.load(open(arquivo))
         servos = list()
 
-        for (nome, definicao) in configuracoes.items():
+        for (nome, definicao) in configuracoes['servos'].items():
             servo = Servo(nome, porta=definicao['porta'])
 
             for chave, valor in definicao.items():
@@ -468,10 +471,82 @@ class SSC32(object):
         for servo in self._servos:
             definicoes[servo.nome] = servo.__dict__
 
-        yaml.safe_dump(definicoes, open(arquivo, 'w'), default_flow_style=False)
+        yaml.safe_dump({'servos': definicoes}, open(arquivo, 'w'), default_flow_style=False)
 
 
-class Braco(SSC32):
+class CinematicaMixin(object):
+    @property
+    @abstractmethod
+    def posicao(self) -> tuple: pass
+
+    @posicao.setter
+    @abstractmethod
+    def posicao(self, pos): pass
+
+    @property
+    def velocidade(self) -> tuple:
+        return tuple(np.dot(self.jacobiano(), self.velocidade_de_juntas))
+
+    @velocidade.setter
+    def velocidade(self, velocidade: tuple):
+        self.velocidade_de_juntas = tuple(np.dot(np.linalg.inv(self.jacobiano()), self.velocidade))
+
+    @property
+    @abstractmethod
+    def velocidade_de_juntas(self) -> tuple: pass
+
+    @velocidade_de_juntas.setter
+    @abstractmethod
+    def velocidade_de_juntas(self, velocidade: tuple): pass
+
+    # @posicao.setter
+    # def posicao(self, pos: tuple = None):
+    #     if pos:
+    #         assert (len(pos) == len(self.posicao)), \
+    #             'O posicionamento do braço tem de ser definido por {0} variávies'.format(len(self.posicao))
+    #
+    #         self.x = pos[0]
+    #         self.y = pos[1]
+    #         self.z = pos[2]
+    #         self.phi = pos[3]
+
+    # @property
+    # def cinematica_direta(self):
+    #     return getattr(self, '_cinematica_direta', None)
+    #
+    # @property
+    # def cinematica_inversa(self):
+    #     return getattr(self, '_cinematica_inversa', None)
+    #
+    # @cinematica_direta.setter
+    # def cinematica_direta(self, definicao: Callable):
+    #     # self._cinematica_direta = lambda theta_0, theta_1, theta_2, theta_3, theta_4: \
+    #     #     theta_0 + theta_1
+    #     raise NotImplementedError('É necessário implementar o método')
+    #
+    # @cinematica_inversa.setter
+    # def cinematica_inversa(self, definicao: Callable):
+    #     raise NotImplementedError('É necessário implementar o método')
+    #
+    # @property
+    # def jacobiano(self):
+    #     return getattr(self, '_jacobiano', None)
+    #
+    # @jacobiano.setter
+    # def jacobiano(self, definicao: Callable):
+    #     raise NotImplementedError('É necessário implementar o método')
+
+    @abstractmethod
+    def cinematica_direta(self) -> np.ndarray: pass
+
+    @abstractmethod
+    def cinematica_inversa(self) -> np.ndarray: pass
+
+    @abstractmethod
+    def jacobiano(self) -> np.ndarray: pass
+
+
+class Braco(SSC32, CinematicaMixin):
     def __init__(self, *args, **kwargs):
         self._servos = (
             Servo('HS-485HB', 0, angulo_minimo=-45.0, angulo_maximo=40.0,
@@ -487,6 +562,108 @@ class Braco(SSC32):
         )
 
         super(Braco, self).__init__(*args, **kwargs)
+
+
+
+    # @posicao.
+    # def posicao(self, pos: tuple = None):
+    #     pass
+
+    def movimentar(self, posicao: tuple, velocidade: tuple=None):
+        """
+        Permite a movimentação
+        :param posicao: Posição do servo
+        """
+        self.posicao = posicao
+
+        autocommit = self.autocommit
+        self.autocommit = False
+
+        if autocommit:
+            self.commit()
+            self.autocommit = autocommit
+
+    @property
+    def x(self) -> float:
+        """
+        :return: Posição x do servo
+        """
+        return self.posicao[0]
+
+    @x.setter
+    def x(self, pos_x):
+        raise NotImplementedError('É necessário definir a cinemática inversa para essa variável')
+
+    @property
+    def y(self) -> float:
+        """
+        :return: Posição y do servo
+        """
+        return self.posicao[1]
+
+    @y.setter
+    def y(self, pos_y):
+        raise NotImplementedError('É necessário definir a cinemática inversa para essa variável')
+
+    @property
+    def z(self) -> float:
+        """
+        :return: Posição z do servo
+        """
+        return self.posicao[2]
+
+    @z.setter
+    def z(self, pos_z):
+        raise NotImplementedError('É necessário definir a cinemática inversa para essa variável')
+
+    @property
+    def phi(self) -> float:
+        """
+        :return: Orientação phi da garra do servo
+        """
+        return self.posicao[3]
+
+    @phi.setter
+    def phi(self, pos_phi):
+        raise NotImplementedError('É necessário definir a cinemática inversa para essa variável')
+
+    @property
+    def posicao(self):
+        return tuple([0, 0, 0, 0])
+
+    @posicao.setter
+    def posicao(self, pos):
+        pass
+
+    @property
+    def velocidade_de_juntas(self):
+        return tuple([0, 0, 0, 0])
+
+    @velocidade_de_juntas.setter
+    def velocidade_de_juntas(self, velocidade: tuple):
+        pass
+
+    def cinematica_direta(self):
+        return np.array([
+            [
+                math.sin(
+                    math.radians(self._servos[0].angulo) +
+                    math.radians(self._servos[1].angulo) +
+                    math.radians(self._servos[2].angulo)
+                ),
+                
+            ],
+            [],
+            [],
+            [0, 0, 0, 1]
+        ], dtype=float)
+
+    def cinematica_inversa(self):
+        pass
+
+    def jacobiano(self):
+        pass
+
 
 # class Hermes(object):
 #     def __init__(self, porta, taxa=115200, quantidade=32):
