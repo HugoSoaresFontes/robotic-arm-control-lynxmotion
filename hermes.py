@@ -562,7 +562,8 @@ class Braco(SSC32, CinematicaMixin):
                   descricao='Servo da garra'),
         )
 
-        self._l5 = 5.6
+        # self._l5 = 5.6
+        self._l5 = 8.5
         self._l4 = 18.6
         self._l3 = 14.7
         self._l2 = 2.0
@@ -573,6 +574,15 @@ class Braco(SSC32, CinematicaMixin):
     # @posicao.
     # def posicao(self, pos: tuple = None):
     #     pass
+
+    @property
+    def posicao_angular(self):
+        return (
+            -self.servos[0].angulo, self.servos[1].angulo + 90,
+            self.servos[2].angulo - 90, self.servos[3].angulo,
+            self.servos[4].angulo
+        )
+
 
     def movimentar(self, posicao: tuple, velocidade: tuple=None):
         """
@@ -653,6 +663,9 @@ class Braco(SSC32, CinematicaMixin):
 
     def cinematica_direta(self) -> tuple:
         angulos = [math.radians(servo.angulo) for servo in self.servos]
+
+        angulos[1] += math.radians(90)
+        angulos[2] += math.radians(-90)
 
         return (
             math.cos(angulos[0]) * (
