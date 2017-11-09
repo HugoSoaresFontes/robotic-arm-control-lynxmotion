@@ -104,8 +104,8 @@ class Servo(object):
         :param angulo: Ângulo máximo (em graus) para movimentação do servo
         :return:
         """
-        assert (-45.0 <= angulo <= 45.0), \
-            'O ângulo máximo não pode ser inferior a -45 ou superior a 45'
+        # assert (-45.0 <= angulo <= 45.0), \
+        #     'O ângulo máximo não pode ser inferior a -45 ou superior a 45'
 
         self._pos_max = self.angulo_para_posicao(angulo)
 
@@ -116,8 +116,8 @@ class Servo(object):
         :param angulo: float
         :return:
         """
-        assert (-45.0 <= angulo <= 45.0), \
-            'O ângulo mínimo não pode ser inferior a -45 ou superior a 45'
+        # assert (-45.0 <= angulo <= 45.0), \
+        #     'O ângulo mínimo não pode ser inferior a -45 ou superior a 45'
 
         self._pos_min = self.angulo_para_posicao(angulo)
 
@@ -179,15 +179,17 @@ class Servo(object):
     @staticmethod
     def angulo_para_posicao(angulo: float) -> int:
         """
-        Permite converter um âgulo em graus para o posicionamento do padrão
+        Permite converter um ângulo em graus para o posicionamento do padrão
 
-        posicão = (200 / 9.0) * (angulo + 45) + 500
+        posicão = (100 / 9.0) * (angulo + 45) + 500
         500 <= posicão <= 2500
         :param angulo:
         :return:
         """
-        assert not (90.0 < angulo + 45 < 0.0), "Angulo inválido"
-        posicao = (200 / 9.0) * (angulo + 45) + 500
+        assert not (180.0 < angulo + 90 < 0.0), "Angulo inválido"
+        # Garante que o ângulo está entre 0 e 360
+        # angulo = angulo - (angulo // 360) * 360
+        posicao = (100 / 9.0) * (angulo + 90) + 500
 
         return int(posicao)
 
@@ -202,8 +204,9 @@ class Servo(object):
         :param posicao: int
         :return:
         """
+
         assert (2500 >= posicao >= 500), "Posição inválida"
-        angulo = (posicao - 500) * 0.045 - 45
+        angulo = (posicao - 500) * 0.09 - 90
 
         return angulo
 
@@ -273,9 +276,7 @@ class Servo(object):
             })
 
         if self.descricao:
-            definicao.update({
-                'descricao': self.descricao
-            })
+            definicao.update({'descricao': self.descricao})
 
         return definicao
 
@@ -476,12 +477,12 @@ class SSC32(object):
 
 class CinematicaMixin(object):
     @property
-    @abstractmethod
-    def posicao(self) -> tuple: pass
+    def posicao(self) -> tuple:
+        return self.cinematica_direta()
 
     @posicao.setter
-    @abstractmethod
-    def posicao(self, pos): pass
+    def posicao(self, pos):
+        self.cinematica_inversa(pos)
 
     @property
     def velocidade(self) -> tuple:
@@ -537,10 +538,10 @@ class CinematicaMixin(object):
     #     raise NotImplementedError('É necessário implementar o método')
 
     @abstractmethod
-    def cinematica_direta(self) -> np.ndarray: pass
+    def cinematica_direta(self) -> tuple: pass
 
     @abstractmethod
-    def cinematica_inversa(self) -> np.ndarray: pass
+    def cinematica_inversa(self, pos: tuple): pass
 
     @abstractmethod
     def jacobiano(self) -> np.ndarray: pass
@@ -549,21 +550,25 @@ class CinematicaMixin(object):
 class Braco(SSC32, CinematicaMixin):
     def __init__(self, *args, **kwargs):
         self._servos = (
-            Servo('HS-485HB', 0, angulo_minimo=-45.0, angulo_maximo=40.0,
+            Servo('HS-485HB', 0, angulo_minimo=-90.0, angulo_maximo=90.0,
                   descricao='Servo da base'),
-            Servo('HS-805BB', 1, angulo_minimo=-13.5, angulo_maximo=22.5,
+            Servo('HS-805BB', 1, angulo_minimo=-90.0, angulo_maximo=90.0,
                   descricao='Servo do ombro'),
-            Servo('HS-755HB', 2, angulo_minimo=-18.0, angulo_maximo=27.0,
+            Servo('HS-755HB', 2, angulo_minimo=-90.0, angulo_maximo=90.0,
                   descricao='Servo da cotovelo'),
-            Servo('HS-645MG', 3, angulo_minimo=-45.0, angulo_maximo=45.0,
+            Servo('HS-645MG', 3, angulo_minimo=-90.0, angulo_maximo=90.0,
                   descricao='Servo do punho'),
-            Servo('HS-322HD', 4, angulo_minimo=-9.0, angulo_maximo=40.5,
+            Servo('HS-322HD', 4, angulo_minimo=-27.0, angulo_maximo=45.0,
                   descricao='Servo da garra'),
         )
 
+        self._l5 = 5.6
+        self._l4 = 18.6
+        self._l3 = 14.7
+        self._l2 = 2.0
+        self._l1 = 4.2
+
         super(Braco, self).__init__(*args, **kwargs)
-
-
 
     # @posicao.
     # def posicao(self, pos: tuple = None):
@@ -592,7 +597,7 @@ class Braco(SSC32, CinematicaMixin):
 
     @x.setter
     def x(self, pos_x):
-        raise NotImplementedError('É necessário definir a cinemática inversa para essa variável')
+        self.posicao = (pos_x, self.y, self.z, self.phi)
 
     @property
     def y(self) -> float:
@@ -603,7 +608,7 @@ class Braco(SSC32, CinematicaMixin):
 
     @y.setter
     def y(self, pos_y):
-        raise NotImplementedError('É necessário definir a cinemática inversa para essa variável')
+        self.posicao = (self.x, pos_y, self.z, self.phi)
 
     @property
     def z(self) -> float:
@@ -614,26 +619,29 @@ class Braco(SSC32, CinematicaMixin):
 
     @z.setter
     def z(self, pos_z):
-        raise NotImplementedError('É necessário definir a cinemática inversa para essa variável')
+        self.posicao = (self.x, self.y, pos_z, self.phi)
 
     @property
     def phi(self) -> float:
         """
         :return: Orientação phi da garra do servo
         """
-        return self.posicao[3]
+        return self.posicao[1] + self.posicao[2] + self.posicao[3]
 
     @phi.setter
     def phi(self, pos_phi):
-        raise NotImplementedError('É necessário definir a cinemática inversa para essa variável')
+        self.posicao = (self.x, self.y, self.z, pos_phi)
 
     @property
-    def posicao(self):
-        return tuple([0, 0, 0, 0])
+    def theta(self) -> float:
+        """
+        :return: Orientação phi da garra do servo
+        """
+        return self.posicao[4]
 
-    @posicao.setter
-    def posicao(self, pos):
-        pass
+    @theta.setter
+    def theta(self, pos_theta):
+        self.servos[4].angulo = pos_theta
 
     @property
     def velocidade_de_juntas(self):
@@ -643,23 +651,132 @@ class Braco(SSC32, CinematicaMixin):
     def velocidade_de_juntas(self, velocidade: tuple):
         pass
 
-    def cinematica_direta(self):
-        return np.array([
-            [
-                math.sin(
-                    math.radians(self._servos[0].angulo) +
-                    math.radians(self._servos[1].angulo) +
-                    math.radians(self._servos[2].angulo)
-                ),
-                
-            ],
-            [],
-            [],
-            [0, 0, 0, 1]
-        ], dtype=float)
+    def cinematica_direta(self) -> tuple:
+        angulos = [math.radians(servo.angulo) for servo in self.servos]
 
-    def cinematica_inversa(self):
-        pass
+        return (
+            math.cos(angulos[0]) * (
+                math.cos(angulos[1] + angulos[2] + angulos[3]) * self._l5 +
+                math.cos(angulos[1] + angulos[2]) * self._l4 +
+                math.cos(angulos[1]) * self._l3
+            ),
+
+            math.sin(angulos[0]) * (
+                math.cos(angulos[1] + angulos[2] + angulos[3]) * self._l5 +
+                math.cos(angulos[1] + angulos[2]) * self._l4 +
+                math.cos(angulos[1]) * self._l3
+            ),
+
+            math.sin(angulos[1] + angulos[2] + angulos[3]) * self._l5 +
+            math.sin(angulos[1] + angulos[2]) * self._l4 +
+            math.sin(angulos[1]) * self._l3 +
+            self._l2 + self._l1,
+
+            math.degrees(angulos[1] + angulos[2] + angulos[3]),
+
+            math.degrees(angulos[4]),
+        )
+
+    def _posicionamento_valido(self, pos: tuple):
+        t1, t2, t3, t4, t5 = pos
+
+        return \
+            (self.servos[0].angulo_minimo <= t1 <= self.servos[0].angulo_maximo) and \
+            (self.servos[1].angulo_minimo <= t2 <= self.servos[1].angulo_maximo) and \
+            (self.servos[2].angulo_minimo <= t3 <= self.servos[2].angulo_maximo) and \
+            (self.servos[3].angulo_minimo <= t4 <= self.servos[3].angulo_maximo) and \
+            (self.servos[4].angulo_minimo <= t5 <= self.servos[4].angulo_maximo)
+
+    def _distancia_de_movimento(self, pos: tuple) -> float:
+        return np.linalg.norm(np.array(pos)[:-1] - np.array([x.angulo for x in self.servos[:-1]]))
+
+    def cinematica_inversa(self, pos: tuple):
+        assert (len(pos) == len(self.posicao)), 'O vetor posição deve ter {0} valores'.format(len(pos))
+
+        # Define uma precisão tolerável os erros de arredondamento
+        erro = 0.001
+
+        x, y, z, phi, theta = pos
+        # Definição de variáveis auxiliares
+        s, t = \
+            np.linalg.norm((x, y)) - math.cos(math.radians(phi)) * self._l5, \
+            z - math.sin(math.radians(phi)) * self._l5 - self._l1 - self._l2
+
+        u = (s**2 + t**2 - self._l4**2 + self._l3**2) / (2 * self._l3)
+
+        sen_1 = (y / math.sqrt(x**2 + y**2), )
+        cos_1 = (x / math.sqrt(x**2 + y**2), )
+
+        cos_3 = ((s ** 2 + t ** 2 - self._l4 ** 2 - self._l3 ** 2) / (2 * self._l3 * self._l4), )
+        sen_2 = ((2 * t * u + math.sqrt(max((2 * t * u)**2 - 4*(t**2 + s**2)*(u**2 - s**2), 0))) / (2 * (t**2 + s**2)), (2 * t * u - math.sqrt(max((2 * t * u)**2 - 4*(t**2 + s**2)*(u**2 - s**2), 0))) / (2 * (t**2 + s**2)))
+
+        # Executa testes de arredondamento
+        for valor in sen_1 + cos_1 + cos_3 + sen_2:
+            if abs(valor) - erro > 1:
+                raise ValueError('Posicionamento inválido')
+
+        cos_3 = [(-1 if c < 0 else 1) * min(abs(c), 1) for c in cos_3]
+        sen_2 = [(-1 if s < 0 else 1) * min(abs(s), 1) for s in sen_2]
+
+        sen_3 = (math.sqrt(1 - cos_3[0] ** 2), -math.sqrt(1 - cos_3[0] ** 2))
+        cos_2 = (math.sqrt(1 - sen_2[0] ** 2), math.sqrt(1 - sen_2[1] ** 2))
+
+        theta_1 = np.arctan2(sen_1, cos_1)
+        theta_2 = np.arctan2(sen_2, cos_2)
+        theta_3 = np.arctan2(sen_3, cos_3)
+
+        solucoes = [[math.degrees(t1), math.degrees(t2), math.degrees(t3), phi - math.degrees(t2) - math.degrees(t3), theta]
+                    for t3 in theta_3 for t2 in theta_2 for t1 in theta_1]
+
+        # Obtém quais são as configurações possíveis
+        solucoes_possiveis = list(filter(lambda pos: self._posicionamento_valido(pos), solucoes))
+        # print(solucoes_possiveis)
+
+        # Obtém qual a melhor movimentação
+        melhor_solucao = solucoes_possiveis[np.argmin([self._distancia_de_movimento(x) for x in solucoes_possiveis])]
+
+        # print(melhor_solucao)
+        self.servos[0].angulo = melhor_solucao[0]
+        self.servos[1].angulo = melhor_solucao[1]
+        self.servos[2].angulo = melhor_solucao[2]
+        self.servos[3].angulo = melhor_solucao[3]
+        self.servos[4].angulo = melhor_solucao[4]
+
+        # hegrid
+        # r, s, t = \
+        #     x / math.cos(math.radians(self.servos[0].angulo)) - math.cos(math.radians(phi)) * self._l3, \
+        #     y / math.sin(math.radians(self.servos[0].angulo)) - math.cos(math.radians(phi)) * self._l3, \
+        #     z - math.sin(math.radians(phi)) * self._l5 - self._l1 - self._l2
+        #
+        # u = (r**2 + t**2 - self._l4**2 + self._l3**2) / (2 * self._l3)
+        #
+        # print(math.degrees(
+        #     math.atan2(
+        #         (r**2 + t**2 - self._l4**2 - self._l3**2) / (2 * self._l3 * self._l4),
+        #         math.sqrt(1 - ((r**2 + t**2 - self._l4**2 - self._l3**2) / (2 * self._l3 * self._l4))**2)
+        #     )
+        # ))
+        #
+        # self.servos[2].angulo = math.degrees(
+        #     math.atan2(
+        #         (r**2 + t**2 - self._l4**2 - self._l3**2) / (2 * self._l3 * self._l4),
+        #         math.sqrt(1 - ((r**2 + t**2 - self._l4**2 - self._l3**2) / (2 * self._l3 * self._l4))**2)
+        #     )
+        # )
+        #
+        # sen_2 = (2 * t * u + math.sqrt(4 * t**2 * u**2 - 4 * (t**2 + r**2) * (u**2 - r**2)) ) /\
+        #         (2 * (t**2 + r**2))
+        #
+        # print(math.degrees(
+        #     math.atan2(sen_2, math.sqrt(1 - sen_2))
+        # ))
+        #
+        # self.servos[1].angulo = math.degrees(
+        #     math.atan2(sen_2, math.sqrt(1 - sen_2))
+        # )
+        #
+        # self.servos[3].angulo = phi - self.servos[1].angulo - self.servos[2].angulo
+
 
     def jacobiano(self):
         pass
