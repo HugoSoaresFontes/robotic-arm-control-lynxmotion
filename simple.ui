@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="5.0">
+    <class>MainWindow</class>
+    <widget class="QMainWindow" name="MainWindow">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>640</width>
+                <height>480</height>
+            </rect>
+        </property>
+        <property name="windowTitle">
+            <string>Webcam viewer</string>
+        </property>
+        <widget class="QWidget" name="centralwidget">
+            <layout class="QGridLayout" name="gridLayout">
+                <item row="0" column="0">
+                    <widget class="QLabel" name="lblWebcam">
+                        <property name="text">
+                            <string/>
+                        </property>
+                        <property name="scaledContents">
+                            <bool>true</bool>
+                        </property>
+                    </widget>
+                </item>
+            </layout>
+        </widget>
+    </widget>
+    <resources />
+    <connections />
+</ui>
