@@ -585,7 +585,6 @@ class Braco(SSC32, CinematicaMixin):
             self.servos[4].angulo
         )
 
-
     def movimentar(self, posicao: tuple, velocidade: tuple=None):
         """
         Permite a movimentação
@@ -740,12 +739,15 @@ class Braco(SSC32, CinematicaMixin):
         theta_2 = np.arctan2(sen_2, cos_2)
         theta_3 = np.arctan2(sen_3, cos_3)
 
-        solucoes = [[math.degrees(t1), math.degrees(t2), math.degrees(t3), phi - math.degrees(t2) - math.degrees(t3), theta]
+        solucoes = [[-math.degrees(t1), math.degrees(t2) - 90, math.degrees(t3) + 90, phi - math.degrees(t2) - math.degrees(t3), theta]
                     for t3 in theta_3 for t2 in theta_2 for t1 in theta_1]
 
         # Obtém quais são as configurações possíveis
         solucoes_possiveis = list(filter(lambda pos: self._posicionamento_valido(pos), solucoes))
         # print(solucoes_possiveis)
+
+        if not solucoes_possiveis:
+            raise ValueError('Posicionamento inválido')
 
         # Obtém qual a melhor movimentação
         melhor_solucao = solucoes_possiveis[np.argmin([self._distancia_de_movimento(x) for x in solucoes_possiveis])]
