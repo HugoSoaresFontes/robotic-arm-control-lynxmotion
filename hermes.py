@@ -552,15 +552,15 @@ class CinematicaMixin(object):
 class Braco(SSC32, CinematicaMixin):
     def __init__(self, *args, **kwargs):
         self._servos = (
-            Servo('HS-485HB', 0, angulo_minimo=-90.0, angulo_maximo=90.0,
+            Servo('HS-485HB', 0, angulo_minimo=-90.0, angulo_maximo=80.0,
                   descricao='Servo da base'),
-            Servo('HS-805BB', 1, angulo_minimo=-90.0, angulo_maximo=90.0,
+            Servo('HS-805BB', 1, angulo_minimo=-80.0, angulo_maximo=50.0,
                   descricao='Servo do ombro'),
-            Servo('HS-755HB', 2, angulo_minimo=-90.0, angulo_maximo=90.0,
+            Servo('HS-755HB', 2, angulo_minimo=-36.0, angulo_maximo=54.0,
                   descricao='Servo da cotovelo'),
             Servo('HS-645MG', 3, angulo_minimo=-90.0, angulo_maximo=90.0,
                   descricao='Servo do punho'),
-            Servo('HS-322HD', 4, angulo_minimo=-27.0, angulo_maximo=45.0,
+            Servo('HS-322HD', 4, angulo_minimo=-18.0, angulo_maximo=81.0,
                   descricao='Servo da garra'),
         )
 
@@ -665,8 +665,10 @@ class Braco(SSC32, CinematicaMixin):
     def cinematica_direta(self) -> tuple:
         angulos = [math.radians(servo.angulo) for servo in self.servos]
 
+        angulos[0] *= -1
+
         angulos[1] += math.radians(90)
-        angulos[2] += math.radians(-90)
+        angulos[2] = -1 * angulos[2] + math.radians(-90)
 
         return (
             math.cos(angulos[0]) * (
