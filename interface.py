@@ -11,11 +11,11 @@ braco = Braco(porta='/dev/ttyS0', autocommit=True)
 
 def normalizar(pontos):
     # Amplitudes dos pontos [[x_min, x_max], [y_min, y_max]]
-    p_amplitudes = [ [-2.5, 7.5], [20, 30]]
+    p_amplitudes = [ [-5, 7.2], [24, 35]]
 
     x_dim = 300
     y_dim = 300
-    x_inicio = 50
+    x_inicio = 30
     y_inicio = 0
     pontos_normalizados = []
     for ponto in pontos:
@@ -56,9 +56,9 @@ class QDial(QDial):
         super(QDial, self).__init__(parent)
         self.nome = setup.nome
         self._servo = setup
-        self.setValue(0)
         self.setMinimum(setup.angulo_minimo)
         self.setMaximum(setup.angulo_maximo)
+        self.setValue(setup.angulo)
         self.setNotchesVisible(True)
         self.valueChanged.connect(self.changed)
 
@@ -66,7 +66,11 @@ class QDial(QDial):
         # print(self.nome, valor)
         print('Posição: X( ', braco.posicao[1], ')   Y(' ,  braco.posicao[0], ') ',  'Z(' ,  braco.posicao[2], ')'  )
         try:
-            self._servo.angulo = valor
+            if self._servo.descricao != 'HS-645MG':
+                self._servo.angulo = valor
+
+                braco.servos[3].angulo = -1.0 * (braco.servos[1].angulo + braco.servos[2].angulo)
+
         except:
             print('Posicionamento inválido')
         self.valueSignal.emit()
@@ -111,10 +115,12 @@ class WidgetGallery(QDialog):
         #       |            |
         #       |            |
         #      p10          p11
-        pontos = [ [0.76, 21], [3.66, 20.59],
-                   [-2.17, 25.03], [0.86, 24.05], [4.42, 24.87], [7.46, 24.39],
-                   [-2.45, 28.33], [1.02, 28.14], [4.03, 28.67], [6.99, 27.95],
-                   [1.15, 32], [3.9, 31.69]
+        pontos = [ [0.02186397348663748, 25.054261723434195], [3.5192413216080016, 24.85184174830539],
+                   [-4.754065475515636, 27.12773392843418], [-0.9180525026281351, 27.24385364132199],
+                   [3.3898167303597146, 27.33174398336085], [6.41091089954956, 27.746610952352253],
+                   [-4.761240283179806, 30.232015040688967], [0.02670758550980616,30.60463084501256],
+                    [2.6828077818237768, 30.664633264500914], [7.158085559914743, 30.98040486080687],
+                   [0.03015145682060395, 34.55101566912918], [2.416173500978148, 34.46644307862257]
                  ]
         pontos = normalizar(pontos)
 
@@ -157,6 +163,20 @@ class WidgetGallery(QDialog):
     def __init__(self, parent=None):
         super(WidgetGallery, self).__init__(parent)
         self.posicao = [braco.posicao[1], braco.posicao[0], braco.posicao[2]]
+        braco.posicao = ( 27.12773392843418 , -4.754065475515636, 8.12017977588349, 0, 20)
+        # braco.commit()
+        # braco.posicao = (31.76092034289618, 4.4976281603210415, 8.667036408301385, 0, -10)
+        # braco.movimentar((
+        #     (27, 0, 22, 0, 0),
+        #     (31.76092034289618, 4.4976281603210415, 8.667036408301385, 0, -10),
+        #     (31.76092034289618, 4.4976281603210415, 8.667036408301385, 0, 20),
+        #     (28, 0, 8.667036408301385, 0, 20),
+        #     (28, 0, 8.667036408301385, 0, -10),
+        #     (25, 0, 22, 0, -10),
+        #
+        #     # {'x': 27, 'y':  0, 'z': 22, 'theta': 0},
+        #     # {'x': 31.76092034289618, 'y':  4.4976281603210415, 'z': 8.667036408301385, 'theta': -10}
+        # ))
 
         braco.commit()
 
