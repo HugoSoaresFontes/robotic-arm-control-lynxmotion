@@ -13,7 +13,8 @@ import math
 class Servo(object):
     def __init__(self, nome: str, porta: int,
                  angulo_minimo: float = -45.0, angulo_maximo: float = 45.0,
-                 descricao: str = None, velocidade: float = 45.0, callback: Callable = None):
+                 descricao: str = None, velocidade: float = 45.0, callback: Callable = None,
+                 correcao: tuple = (1, 0)):
         """
         Instancia o objeto do tipo servo
         :param nome: Nome do servo
@@ -32,6 +33,9 @@ class Servo(object):
         # Variável que diz se o servo foi movido
         self.alterado = True
 
+        # Variáveis que guardam a correção dos ângulos do servo
+        self.variaveis_correcao = correcao
+
         self.angulo_maximo = angulo_maximo
         self.angulo_minimo = angulo_minimo
 
@@ -48,6 +52,23 @@ class Servo(object):
         )
 
     @property
+    def variaveis_correcao(self):
+        return (self._a, self._b)
+
+    @variaveis_correcao.setter
+    def variaveis_correcao(self, valor: tuple):
+        assert len(valor) == 2, 'Atributo inválido'
+
+        self._a = valor[0]
+        self._b = valor[1]
+
+    def _correcao_direta(self, valor):
+        return valor * self._a + self._b
+
+    def _correcao_reversa(self, valor):
+        return (valor - self._b) / self._a
+
+    @property
     def posicao(self) -> int:
         """
         :return: Posição absoluta do servo
@@ -60,7 +81,7 @@ class Servo(object):
         Permite a alteração da posição absoluta do servo
         :param pos: Posição absoluta do servo
         """
-        assert (self._pos_min <= pos <= self._pos_max), \
+        assert (self.posicao_minima <= pos <= self.posicao_maxima), \
             'Posicionamento inválido'
 
         self._pos = pos
@@ -73,7 +94,7 @@ class Servo(object):
         """
         :return: Ângulo em graus do servo
         """
-        return self.posicao_para_angulo(self._pos)
+        return self._correcao_reversa(self.posicao_para_angulo(self._pos))
 
     @angulo.setter
     def angulo(self, angulo: float):
@@ -81,21 +102,21 @@ class Servo(object):
         Modifica a posição (em graus) do servo
         :param angulo: Ângulo em graus do servo (angulo_minimo <= angulo <= angulo_maximo)
         """
-        self.posicao = self.angulo_para_posicao(angulo)
+        self.posicao = self.angulo_para_posicao(self._correcao_direta(angulo))
 
     @property
     def angulo_minimo(self) -> float:
         """
         :return: Ângulo mínimo permitido para o servo
         """
-        return self.posicao_para_angulo(self._pos_min)
+        return self._correcao_reversa(self.posicao_para_angulo(self._pos_min))
 
     @property
     def angulo_maximo(self) -> float:
         """
         :return: Ângulo máximo permitido para o servo
         """
-        return self.posicao_para_angulo(self._pos_max)
+        return self._correcao_reversa(self.posicao_para_angulo(self._pos_max))
 
     @angulo_maximo.setter
     def angulo_maximo(self, angulo: float):
@@ -106,8 +127,7 @@ class Servo(object):
         """
         # assert (-45.0 <= angulo <= 45.0), \
         #     'O ângulo máximo não pode ser inferior a -45 ou superior a 45'
-
-        self._pos_max = self.angulo_para_posicao(angulo)
+        self._pos_max = self.angulo_para_posicao(self._correcao_direta(angulo))
 
     @angulo_minimo.setter
     def angulo_minimo(self, angulo: float):
@@ -118,8 +138,7 @@ class Servo(object):
         """
         # assert (-45.0 <= angulo <= 45.0), \
         #     'O ângulo mínimo não pode ser inferior a -45 ou superior a 45'
-
-        self._pos_min = self.angulo_para_posicao(angulo)
+        self._pos_min = self.angulo_para_posicao(self._correcao_direta(angulo))
 
     @property
     def posicao_maxima(self) -> int:
@@ -127,7 +146,7 @@ class Servo(object):
         Retorna a posição máxima permitida para o servo
         :return: int
         """
-        return self._pos_max
+        return max(self._pos_min, self._pos_max)
 
     @property
     def velocidade(self) -> int:
@@ -154,7 +173,7 @@ class Servo(object):
         Retorna a posição mínima permitida para o servo
         :return: int
         """
-        return self._pos_min
+        return min(self._pos_min, self._pos_max)
 
     @posicao_minima.setter
     def posicao_minima(self, posicao: int):
@@ -548,14 +567,14 @@ class CinematicaMixin(object):
 
 
 class Braco(SSC32, CinematicaMixin):
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, autocommit=False, **kwargs):
         self._servos = (
             Servo('HS-485HB', 0, angulo_minimo=-90.0, angulo_maximo=90.0,
-                  descricao='Servo da base'),
-            Servo('HS-805BB', 1, angulo_minimo=-90.0, angulo_maximo=90.0,
-                  descricao='Servo do ombro'),
-            Servo('HS-755HB', 2, angulo_minimo=-90.0, angulo_maximo=90.0,
-                  descricao='Servo da cotovelo'),
+                  descricao='Servo da base', correcao=(-1, 0)),
+            Servo('HS-805BB', 1, angulo_minimo=0.00, angulo_maximo=180.0,
+                  descricao='Servo do ombro', correcao=(1, -90)),
+            Servo('HS-755HB', 2, angulo_minimo=-180.0, angulo_maximo=0.0,
+                  descricao='Servo da cotovelo', correcao=(-1, -90)),
             Servo('HS-645MG', 3, angulo_minimo=-90.0, angulo_maximo=90.0,
                   descricao='Servo do punho'),
             Servo('HS-322HD', 4, angulo_minimo=-27.0, angulo_maximo=45.0,
@@ -570,6 +589,9 @@ class Braco(SSC32, CinematicaMixin):
         self._l1 = 4.2
 
         super(Braco, self).__init__(*args, **kwargs)
+        self.autocommit = autocommit
+
+        self.posicao_angular = (0, 90, -90, 0, 0)
 
     # @posicao.
     # def posicao(self, pos: tuple = None):
@@ -578,10 +600,18 @@ class Braco(SSC32, CinematicaMixin):
     @property
     def posicao_angular(self):
         return (
-            -self.servos[0].angulo, self.servos[1].angulo + 90,
-            self.servos[2].angulo - 90, self.servos[3].angulo,
+            self.servos[0].angulo, self.servos[1].angulo,
+            self.servos[2].angulo, self.servos[3].angulo,
             self.servos[4].angulo
         )
+
+    @posicao_angular.setter
+    def posicao_angular(self, posicao):
+        self.servos[0].angulo = posicao[0]
+        self.servos[1].angulo = posicao[1]
+        self.servos[2].angulo = posicao[2]
+        self.servos[3].angulo = posicao[3]
+        self.servos[4].angulo = posicao[4]
 
     def movimentar(self, posicao: tuple, velocidade: tuple=None):
         """
@@ -663,9 +693,6 @@ class Braco(SSC32, CinematicaMixin):
     def cinematica_direta(self) -> tuple:
         angulos = [math.radians(servo.angulo) for servo in self.servos]
 
-        angulos[1] += math.radians(90)
-        angulos[2] += math.radians(-90)
-
         return (
             math.cos(angulos[0]) * (
                 math.cos(angulos[1] + angulos[2] + angulos[3]) * self._l5 +
@@ -737,9 +764,9 @@ class Braco(SSC32, CinematicaMixin):
         theta_2 = np.arctan2(sen_2, cos_2)
         theta_3 = np.arctan2(sen_3, cos_3)
 
-        solucoes = [[-math.degrees(t1), math.degrees(t2) - 90, math.degrees(t3) + 90, phi - math.degrees(t2) - math.degrees(t3), theta]
+        solucoes = [[math.degrees(t1), math.degrees(t2), math.degrees(t3), phi - math.degrees(t2) - math.degrees(t3), theta]
                     for t3 in theta_3 for t2 in theta_2 for t1 in theta_1]
-
+        # print(solucoes)
         # Obtém quais são as configurações possíveis
         solucoes_possiveis = list(filter(lambda pos: self._posicionamento_valido(pos), solucoes))
         # print(solucoes_possiveis)
