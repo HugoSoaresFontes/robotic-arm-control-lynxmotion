@@ -99,3 +99,9 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Deploy
+deployment/build
+deployment/dist
+deployment/*.deb
+deployment/*_v*

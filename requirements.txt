@@ -1,4 +1,11 @@
+Cython==0.27.3
+numexpr==2.6.4
 numpy==1.13.3
+psutil==5.4.1
+pyglui==1.11
+PyOpenGL==3.1.0
+PyQt5==5.9.2
 pyserial==3.4
-pyssc32==0.4.1
 PyYAML==3.12
+sip==4.19.6
+uvc==0.13

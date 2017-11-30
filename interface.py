@@ -1,8 +1,11 @@
+import
+from
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QPixmap
+
 from hermes import Braco
 
-from PyQt5.QtCore import QDateTime, Qt, QTimer, QObject, pyqtSignal
-from PyQt5.QtGui import QIcon, QPixmap
-from PyQt5.QtWidgets import (QApplication, QDialog, QDial, QGridLayout, QGroupBox,
+(QApplication, QDialog, QDial, QGridLayout, QGroupBox,
     QHBoxLayout, QLabel, QPushButton, QSlider, QVBoxLayout, QWidget)
 
 
