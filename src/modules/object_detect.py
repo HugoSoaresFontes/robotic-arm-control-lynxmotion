@@ -14,84 +14,48 @@ prev_targets = []
 #
 #     return np.array(gray * 255, dtype=np.uint8)
 
-def detect_targets(gray_img, min_area=200):
-    img = cv2.GaussianBlur(gray_img, (5, 5), 0)
-    edges = cv2.Canny(img, 30, 100)
+def detect_circles(img, interval, min_radius=30):
+    img = cv2.inRange(img, interval[0], interval[1])
 
-    _img, contours, hierarchy = cv2.findContours(edges,
+    shape = img.shape
+
+    kernel = np.ones((5, 5), np.uint8)
+    img = cv2.dilate(img, kernel, iterations=6)
+    img = cv2.erode(img, kernel, iterations=6)
+    # img = cv2.dilate(img, kernel, iterations=9)
+
+    # cv2.imshow("red", img)
+
+    img = cv2.Canny(img, 30, 100)
+    _img, contours, hierarchy = cv2.findContours(img,
                                                  mode=cv2.RETR_TREE,
                                                  method=cv2.CHAIN_APPROX_SIMPLE, offset=(0, 0))
-    hierarchy = hierarchy[0]
-    contours = np.array(contours)
-
-    # keep only contours                        with parents     and      children
-    contained_contours = contours[np.logical_and(hierarchy[:, 3] >= 0, hierarchy[:, 2] >= 0)]
-
     detected_circles = []
 
-    for c in contained_contours:
-        peri = cv2.arcLength(c, True)
-
+    for c in contours:
         area = cv2.contourArea(c)
-
-        approx = cv2.approxPolyDP(c, epsilon=0.01*peri, closed=True)
+        peri = cv2.arcLength(c, True)
+        approx = cv2.approxPolyDP(c, epsilon=0.01 * peri, closed=True)
 
         if len(approx) > 5:
             ellipse = cv2.fitEllipse(approx)
-            ratio = np.pi * (ellipse[1][0] * ellipse[1][1]) / area
-            if ratio >= 0.5 and ratio <= 4.5:
+            if ellipse[1][0] >= min_radius and ellipse[1][1] >= min_radius:
                 detected_circles.append(ellipse)
 
-    detected_targets = []
+    return detected_circles
 
-    for i, circle_1 in enumerate(detected_circles):
-        (center_1, axes_1, orientation_1) = circle_1
-        circles = [circle_1]
 
-        if min(axes_1) / max(axes_1) < 0.6:
-            continue
-
-        for circle_2 in detected_circles[i+1::]:
-            if circle_1 == circle_2:
-                continue
-
-            (center_2, axes_2, orientation_2) = circle_2
-
-            if min(axes_2) / max(axes_2) < 0.6:
-                continue
-
-            # center = np.mean([center_1, center_2], axis=0)
-            #
-            #
-            mean_ = np.mean([axes_1, axes_2])
-
-            if np.linalg.norm(np.array(center_1) - np.array(center_2)) < 0.1 * mean_:
-                circles.append(circle_2)
-                # target = (tuple(center), axes, (orientation_1 + orientation_2) /2)
-                #
-                # detected_targets.append(target)
-                # cv2.ellipse(img, target, (0, 0, 255), 2)
-
-        if len(circles) > 1:
-            center = np.mean([circle[0] for circle in circles], axis=0)
-
-            max_axis = [max(circle[1]) for circle in circles]
-            min_axis = [min(circle[1]) for circle in circles]
-            orientation = np.mean([circle[2] for circle in circles])
-
-            axes = (
-                np.max(min_axis) + abs(
-                    np.max(min_axis) - np.min(min_axis)
-                ),
-                np.max(max_axis) + abs(
-                    np.max(max_axis) - np.min(max_axis)
-                ),
-            )
-
-            if 2 * np.pi * axes[0] * axes[1] >= min_area:
-                target = (tuple(center), axes, orientation)
-                # print(target)
-                detected_targets.append(target)
+def detect_targets(img, min_radius=30):
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    detected_targets = detect_circles(
+        hsv,
+        (np.array([160, 100, 100]), np.array([190, 255, 255])),
+        min_radius=min_radius
+    ) + detect_circles(
+        hsv,
+        (np.array([45, 100, 100]), np.array([50, 255, 255])),
+        min_radius=min_radius
+    )
 
     return detected_targets
 
@@ -101,12 +65,12 @@ def draw_targets(targets, img):
         cv2.ellipse(img, t, (0, 0, 255), 2)
 
 
-def detect_targets_robust(gray_img, min_area=200, true_detect_every_frame=2):
+def detect_targets_robust(img, min_radius=30, true_detect_every_frame=2):
     global prev_targets
 
     global tick
 
-    new_targets = detect_targets(gray_img, min_area=200,)
+    new_targets = detect_targets(img, min_radius=30)
 
     if tick > 0:
         tick -= 1
@@ -122,22 +86,86 @@ def detect_targets_robust(gray_img, min_area=200, true_detect_every_frame=2):
 def bench():
     cap = cv2.VideoCapture(0)
 
+    # frame = cv2.imread('/home/aluno/Imagens/alvos.png')
+    #
+    # hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+    #
+    # R1 = cv2.inRange(hsv, np.array([160, 100, 100]), np.array([190, 255, 255]))
+    #
+    # kernel = np.ones((5, 5), np.uint8)
+    # R1 = cv2.dilate(R1, kernel, iterations=6)
+    # R1 = cv2.erode(R1, kernel, iterations=6)
+    #
+    # R1 = cv2.Canny(R1, 30, 100)
+    #
+    # _img, contours, hierarchy = cv2.findContours(R1,
+    #                                              mode=cv2.RETR_TREE,
+    #                                              method=cv2.CHAIN_APPROX_SIMPLE, offset=(0, 0))
+    #
+    # detected_circles = []
+    #
+    # for c in contours:
+    #     # cv2.drawContours(frame, c, -1, (255, 0, 0))
+    #     area = cv2.contourArea(c)
+    #     peri = cv2.arcLength(c, True)
+    #     approx = cv2.approxPolyDP(c, epsilon=0.01 * peri, closed=True)
+    #
+    #     if len(approx) > 5:
+    #         ellipse = cv2.fitEllipse(approx)
+    #         detected_circles.append(ellipse)
+    #         cv2.ellipse(frame, ellipse, (255, 0, 0))
+    #
+    # # print(circles)
+    # # # for i in circles[0, :]:
+    # # #     # draw the outer circle
+    # # #     cv2.circle(frame, (i[0], i[1]), i[2], (0, 255, 0), 2)
+    # # #     # draw the center of the circle
+    # # #     cv2.circle(frame, (i[0], i[1]), 2, (0, 0, 255), 3)
+    #
+    # cv2.imshow('hsv', frame)
+    #
+    # # R, G, B = np.array(frame).T.swapaxes(2, 1)
+    # #
+    # # pure_G = G - (R + B) / 3
+    # #
+    # # pure_G[pure_G > 0] = 1
+    # # pure_G[pure_G < 0] = 0
+    # #
+    # # R = 255 - R
+    # # G = 255 - G
+    # # B = 255 - B
+    # #
+    # # cv2.imshow('pure_G', pure_G)
+    # #
+    # # edges_R = cv2.adaptiveThreshold(R, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 9)
+    # # edges_G = cv2.Canny(G, 30, 100)
+    # # edges_B = cv2.adaptiveThreshold(B, 255, cv2.ADAPTIVE_THRESH_MEAN_C, cv2.THRESH_BINARY, 11, 9)
+    # #
+    # # cv2.imshow('R', R)
+    # # cv2.imshow('G', edges_G)
+    # # cv2.imshow('B', B)
+    #
     while True:
         # Capture frame-by-frame
         ret, img = cap.read()
-
-        gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        targets = detect_targets(gray_img)
+        #
+        # gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        targets = detect_targets(img)
         draw_targets(targets, img)
 
         cv2.imshow('img', img)
+
+        if cv2.waitKey(1) == 27:
+            break
 
         # for m in markers:
         #     if 'img' in m:
         #         cv2.imshow('id %s'%m['id'], m['img'])
         #         cv2.imshow('otsu %s'%m['id'], m['otsu'])
-        if cv2.waitKey(1) == 27:
-            break
+    # while True:
+    #     if cv2.waitKey(1) == 27:
+    #         return
+    pass
 
 
 if __name__ == '__main__':

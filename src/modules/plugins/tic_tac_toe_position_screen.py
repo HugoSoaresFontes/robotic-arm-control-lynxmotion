@@ -101,18 +101,18 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
             self.mouse_released = False
             self._last_mouse_click_pos = normalize(pos, self.g_pool.capture.frame_size, flip_y=True)
 
-            self.update_move(self._last_mouse_click_pos)
-        elif action == glfw.RELEASE:
-            self._edit_id = None
-
             if self.move_robot and self.move_to_target_when_click:
-                for target in self.targets:
+                for i, target in enumerate(self.targets):
                     aux = Delaunay(target)
                     if aux.find_simplex(pos) >= 0:
-                        self.update_move(pos)
+                        self.to_target = True
+                        # self._last_mouse_click_pos = normalize(self._unnormalized_targets[i][0][-1::-1], self.g_pool.capture.frame_size, flip_y=True)
                         self.move_to_target_when_click = False
                         break
 
+            self.update_move(self._last_mouse_click_pos)
+        elif action == glfw.RELEASE:
+            self._edit_id = None
             self.mouse_released = True
 
     def recent_events(self, events):
@@ -120,7 +120,7 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
         if not frame:
             return
 
-        targets = detect_targets_robust(frame.gray)
+        targets = detect_targets_robust(frame.bgr)
         self._unnormalized_targets = targets
         self.targets = []
         window_shape = self.g_pool.capture.frame_size
@@ -131,8 +131,8 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
         for (center, axes, orientation) in targets:
             rect = []
             for ang in np.arange(0, 2 * np.pi, np.pi / 3):
-                x = center[0] + math.sin(ang) * axes[0] / 2.
-                y = center[1] + math.cos(ang) * axes[1] / 2.
+                x = center[0] + math.sin(ang + math.radians(orientation)) * axes[1] / 2.
+                y = center[1] + math.cos(ang + math.radians(orientation)) * axes[0] / 2.
 
                 rect.append([fator[0] * x, fator[1] * y])
 
@@ -270,7 +270,25 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
 
                 pos = cv2.perspectiveTransform(pos, self.inverse_perspective_matrices[self._id_rect])
                 pos.shape = shape
+
+                if getattr(self, 'to_target', None) is not None:
+                    self.abrir()
+                    self.g_pool.braco.posicao = (pos[1], pos[0], self.move_robot_z + 4, self.move_robot_phi)
+                else:
+                    posicao = self.g_pool.braco.posicao
+                    self.g_pool.braco.posicao = (posicao[0], posicao[1], posicao[2] + 4, posicao[3])
+
                 self.g_pool.braco.posicao = (pos[1], pos[0], self.move_robot_z, self.move_robot_phi)
+
+                if getattr(self, 'to_target', None) is not None:
+                    self.fechar()
+                    self.to_target = None
+
+    def abrir(self):
+        self.g_pool.braco.servos[4].angulo = self.g_pool.braco.angulo_garra_soltar
+
+    def fechar(self):
+        self.g_pool.braco.servos[4].angulo = self.g_pool.braco.angulo_garra_pegar
 
     def print_detected_values(self):
         if not getattr(self, '_unnormalized_targets', None):

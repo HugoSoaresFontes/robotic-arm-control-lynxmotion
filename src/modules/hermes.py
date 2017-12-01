@@ -16,8 +16,6 @@ from threading import Thread, Event
 def cauchy_schwarz_inequality(matriz: np.array):
     independentes = np.ones(matriz.shape[0], dtype=bool)
 
-    print(matriz)
-
     for i in range(matriz.shape[0]):
         for j in range(matriz.shape[0]):
             if i != j:
@@ -101,10 +99,9 @@ class Movimento(object):
 
 
 class Servo(object):
-    def __init__(self, nome: str, porta: int,
+    def __init__(self, nome: str, porta: int, alpha: float, beta: float,
                  angulo_minimo: float = -45.0, angulo_maximo: float = 45.0,
-                 descricao: str = None, velocidade: float = 45.0, callback: Callable = None,
-                 correcao: tuple = (1, 0), correcao_robusta=(1.0, 1.0)):
+                 descricao: str = None, velocidade: float = 45.0, callback: Callable = None):
         """
         Instancia o objeto do tipo servo
         :param nome: Nome do servo
@@ -124,10 +121,8 @@ class Servo(object):
         self.alterado = True
 
         # Variáveis que guardam a correção dos ângulos do servo
-        self.variaveis_correcao = correcao
-
-        # Variáveis de correção robusta
-        self.variaveis_correcao_robusta = correcao_robusta
+        self.alpha = alpha
+        self.beta = beta
 
         self.angulo_maximo = angulo_maximo
         self.angulo_minimo = angulo_minimo
@@ -152,11 +147,6 @@ class Servo(object):
 
     @angulo_invertido.setter
     def angulo_invertido(self, inverter: bool):
-        if inverter:
-            self._a = -1
-        else:
-            self._a = 1
-
         if getattr(self, '_pos_min', None) and (
                     self._a < 0 and self._pos_min < self._pos_max or self._a > 0 and self._pos_min > self._pos_max):
             aux = self._pos_max
@@ -172,62 +162,21 @@ class Servo(object):
         self._b = angulo
 
     @property
-    def variaveis_correcao(self):
-        return (self._a, self._b)
+    def alpha(self):
+        return self._a
 
-    @property
-    def variaveis_correcao_robusta(self):
-        return (self._a1, self._a2)
-
-    @variaveis_correcao.setter
-    def variaveis_correcao(self, valor: tuple):
-        assert len(valor) == 2, 'Atributo inválido'
-
-        self._a = valor[0]
-        self._b = valor[1]
+    @alpha.setter
+    def alpha(self, alpha: float):
+        self._a = float(alpha)
         self.angulo_invertido = self._a < 0
 
-    @variaveis_correcao_robusta.setter
-    def variaveis_correcao_robusta(self, valor: tuple):
-        assert len(valor) == 2, 'Atributo inválido'
-
-        assert valor[0] > 0 and valor[1] > 0
-
-        self._a1 = valor[0]
-        self._a2 = valor[1]
-
-        if getattr(self, '_pos_max', None) and getattr(self, '_pos_min', None):
-            self.angulo_variacao_maximo = self.angulo_variacao_maximo
-            self.angulo_variacao_minimo = self.angulo_variacao_minimo
-
     @property
-    def s1(self):
-        return self._a1
+    def beta(self):
+        return self._b
 
-    @property
-    def s2(self):
-        return self._a2
-
-    @s1.setter
-    def s1(self, valor):
-        self.variaveis_correcao_robusta = (valor, self.s2)
-
-    @s2.setter
-    def s2(self, valor):
-        self.variaveis_correcao_robusta = (self.s1, valor)
-
-
-    def _correcao_direta(self, valor):
-        if (valor - self._b) / self._a >= 0:
-            return (valor * self._a + self._b) * self._a1
-        else:
-            return (valor * self._a + self._b) * self._a2
-
-    def _correcao_reversa(self, valor):
-        if (valor * self._a + self._b >= 0):
-            return (valor - self._b) / self._a / self._a1
-        else:
-            return (valor - self._b) / self._a / self._a2
+    @beta.setter
+    def beta(self, beta: float):
+        self._b = beta
 
     @property
     def posicao(self) -> int:
@@ -275,7 +224,7 @@ class Servo(object):
         """
         :return: Ângulo em graus do servo
         """
-        return self._correcao_reversa(self.posicao_para_angulo(self.posicao))
+        return self.posicao_para_angulo(self.posicao)
 
     @angulo.setter
     def angulo(self, angulo: float):
@@ -283,26 +232,21 @@ class Servo(object):
         Modifica a posição (em graus) do servo
         :param angulo: Ângulo em graus do servo (angulo_minimo <= angulo <= angulo_maximo)
         """
-        self.posicao = self.angulo_para_posicao(self._correcao_direta(angulo))
+        self.posicao = self.angulo_para_posicao(angulo)
 
     @property
     def angulo_minimo(self) -> float:
         """
         :return: Ângulo mínimo permitido para o servo
         """
-        return self._correcao_reversa(self.posicao_para_angulo(self._pos_min))
+        return self.posicao_para_angulo(self._pos_min)
 
     @property
     def angulo_variacao_maximo(self) -> float:
         """
         :return: Máxima variação permitida para o ângulo do servo
         """
-        valor = self._a * self.posicao_para_angulo(self._pos_max)
-
-        if self.posicao_para_angulo(self._pos_max) > 0:
-            return valor / self._a1
-        else:
-            return valor / self._a2
+        return self._a * self.posicao_para_angulo(self._pos_max)
 
     @angulo_variacao_maximo.setter
     def angulo_variacao_maximo(self, angulo: float):
@@ -312,34 +256,17 @@ class Servo(object):
         :return:
         """
 
-        if angulo > 90:
-            angulo = 90
-        elif angulo < -90:
-            angulo = -90
-
         assert (-90.0 <= angulo <= 90.0), \
             'O ângulo máximo não pode ser inferior a -90 ou superior a 90'
 
-        valor = self._a * angulo
-
-        if angulo > 0:
-            valor = valor * self._a1
-        else:
-            valor = valor * self._a2
-
-        self._pos_max = self.angulo_para_posicao(valor)
+        self._pos_max = self.angulo_para_posicao(self._a * angulo)
 
     @property
     def angulo_variacao_minimo(self) -> float:
         """
         :return: Mínima variação permitida para o ângulo do servo
         """
-        valor = self._a * self.posicao_para_angulo(self._pos_min)
-
-        if self.posicao_para_angulo(self._pos_min) > 0:
-            return valor / self._a1
-        else:
-            return valor / self._a2
+        return self._a * self.posicao_para_angulo(self._pos_min)
 
     @angulo_variacao_minimo.setter
     def angulo_variacao_minimo(self, angulo: float):
@@ -349,29 +276,17 @@ class Servo(object):
         :return:
         """
 
-        if angulo > 90:
-            angulo = 90
-        elif angulo < -90:
-            angulo = -90
-
         assert (-90.0 <= angulo <= 90.0), \
             'O ângulo mínimo não pode ser inferior a -90 ou superior a 90'
 
-        valor = self._a * angulo
-
-        if angulo > 0:
-            valor = valor * self._a1
-        else:
-            valor = valor * self._a2
-
-        self._pos_min = self.angulo_para_posicao(valor)
+        self._pos_min = self.angulo_para_posicao(self._a * angulo)
 
     @property
     def angulo_maximo(self) -> float:
         """
         :return: Ângulo máximo permitido para o servo
         """
-        return self._correcao_reversa(self.posicao_para_angulo(self._pos_max))
+        return self.posicao_para_angulo(self._pos_max)
 
     @angulo_maximo.setter
     def angulo_maximo(self, angulo: float):
@@ -382,7 +297,7 @@ class Servo(object):
         """
         # assert (-45.0 <= angulo <= 45.0), \
         #     'O ângulo máximo não pode ser inferior a -45 ou superior a 45'
-        self._pos_max = self.angulo_para_posicao(self._correcao_direta(angulo))
+        self._pos_max = self.angulo_para_posicao(angulo)
 
     @angulo_minimo.setter
     def angulo_minimo(self, angulo: float):
@@ -393,7 +308,7 @@ class Servo(object):
         """
         # assert (-45.0 <= angulo <= 45.0), \
         #     'O ângulo mínimo não pode ser inferior a -45 ou superior a 45'
-        self._pos_min = self.angulo_para_posicao(self._correcao_direta(angulo))
+        self._pos_min = self.angulo_para_posicao(angulo)
 
     @property
     def posicao_maxima(self) -> int:
@@ -450,8 +365,7 @@ class Servo(object):
         """
         self._pos_max = posicao
 
-    @staticmethod
-    def angulo_para_posicao(angulo: float) -> int:
+    def angulo_para_posicao(self, angulo: float) -> int:
         """
         Permite converter um ângulo em graus para o posicionamento do padrão
 
@@ -463,12 +377,11 @@ class Servo(object):
         assert not (180.0 < angulo + 90 < 0.0), "Angulo inválido"
         # Garante que o ângulo está entre 0 e 360
         # angulo = angulo - (angulo // 360) * 360
-        posicao = (100 / 9.0) * (angulo + 90) + 500
+        posicao = (angulo - self._b) / self._a
 
         return int(posicao)
 
-    @staticmethod
-    def posicao_para_angulo(posicao: int):
+    def posicao_para_angulo(self, posicao: int):
         """
         Permite converter o posicionamento do padrão em um ângulo em graus
 
@@ -480,7 +393,7 @@ class Servo(object):
         """
 
         assert (2500 >= posicao >= 500), "Posição inválida"
-        angulo = (posicao - 500) * 0.09 - 90
+        angulo = self._a * posicao + self._b
 
         return angulo
 
@@ -554,8 +467,8 @@ class Servo(object):
             'angulo': self.angulo,
             'angulo_minimo': self.angulo_minimo,
             'angulo_maximo': self.angulo_maximo,
-            'variaveis_correcao': self.variaveis_correcao,
-            'variaveis_correcao_robusta': self.variaveis_correcao_robusta
+            'alpha': self.alpha,
+            'beta': self.beta
         }
 
         if self.velocidade_angular:
@@ -831,8 +744,7 @@ class SSC32(object):
 
         for definicao in dicionario['servos']:
             servo = Servo(nome=definicao['descricao'], porta=definicao['porta'],
-                          correcao=definicao['variaveis_correcao'],
-                          correcao_robusta=definicao['variaveis_correcao_robusta'],
+                          alpha=definicao['alpha'], beta=definicao['beta'],
                           angulo_maximo=definicao['angulo_maximo'],
                           angulo_minimo=definicao['angulo_minimo'], callback=self._commit)
 
@@ -980,19 +892,19 @@ class Braco(SSC32, CinematicaMixin):
     def __init__(self, *args, autocommit=False, **kwargs):
         self._servos = (
             Servo('HS-485HB', 0, angulo_minimo=-90.0, angulo_maximo=90.0,
-                  descricao='Servo da base', correcao=(-1, 0)),
+                  descricao='Servo da base', alpha=-0.0996, beta=144),
             Servo('HS-805BB', 1, angulo_minimo=0.00, angulo_maximo=180.0,
-                  descricao='Servo do ombro', correcao=(1, -90)),
+                  descricao='Servo do ombro', alpha=0.118, beta=-79.8),
             Servo('HS-755HB', 2, angulo_minimo=-180.0, angulo_maximo=0.0,
-                  descricao='Servo da cotovelo', correcao=(-1, -90)),
+                  descricao='Servo da cotovelo', alpha=-0.113, beta=93.3),
             Servo('HS-645MG', 3, angulo_minimo=-90.0, angulo_maximo=90.0,
-                  descricao='Servo do punho'),
+                  descricao='Servo do punho', alpha=0.101, beta=-146),
             Servo('HS-322HD', 4, angulo_minimo=-27.0, angulo_maximo=70.0,
-                  descricao='Servo da garra'),
+                  descricao='Servo da garra', alpha=0.09, beta=-135),
         )
 
         # self._l5 = 5.6
-        self._l5 = 7.5
+        self._l5 = 7.0
         self._l4 = 18.6
         self._l3 = 14.7
         self._l2 = 2.0

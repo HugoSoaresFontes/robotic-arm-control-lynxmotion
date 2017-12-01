@@ -216,15 +216,8 @@ class Robot_Control(Plugin):
             servo_menu.append(ui.Text_Input('descricao', servo, label='Descrição'))
             servo_menu.append(ui.Slider('porta', servo, step=1, min=0, max=31, label="Porta"))
 
-            servo_menu.append(ui.Switch('angulo_invertido', servo, label='Ângulo invertido'))
-            servo_menu.append(
-                ui.Slider('angulo_correcao', servo, min=-180, step=0.05, max=180 + 0.05, label='Ângulo de correção'))
-
-            servo_menu.append(
-                ui.Slider('s1', servo, min=0.1, step=0.01, max=1.0, label='Fator de escala positiva'))
-
-            servo_menu.append(
-                ui.Slider('s2', servo, min=0.1, step=0.01, max=1.0, label='Fator de escala negativa'))
+            servo_menu.append(ui.Slider_Text_Input('alpha', servo, label='Alpha'))
+            servo_menu.append(ui.Slider_Text_Input('beta', servo, label='Beta'))
 
             slider_min = ui.Slider('angulo_variacao_minimo', servo, step=0.05, min=-90,
                                    max=servo.angulo_variacao_maximo - 0.05,
@@ -328,16 +321,10 @@ class Robot_Control(Plugin):
                                     step=0.05,
                                     label='Ângulo de soltar'))
 
-        def abrir():
-            self.g_pool.braco.servos[4].angulo = self.braco.angulo_garra_soltar
-
-        def fechar():
-            self.g_pool.braco.servos[4].angulo = self.braco.angulo_garra_pegar
-
         menu_garra.append(self.sliders_ang[-1])
 
-        menu_garra.append(ui.Button('Abrir garra', abrir))
-        menu_garra.append(ui.Button('Fechar garra', fechar))
+        menu_garra.append(ui.Button('Abrir garra', self.abrir))
+        menu_garra.append(ui.Button('Fechar garra', self.fechar))
 
         self.pos_sliders = [
             ui.Slider_Text_Input('x', self.braco, label='X', getter=self.get_x, setter=self.set_x),
@@ -364,6 +351,12 @@ class Robot_Control(Plugin):
 
         self.menu.elements.append(servos_menu)
         self.menu.elements.append(braco_menu)
+
+    def abrir(self):
+        self.g_pool.braco.servos[4].angulo = self.braco.angulo_garra_soltar
+
+    def fechar(self):
+        self.g_pool.braco.servos[4].angulo = self.braco.angulo_garra_pegar
 
     @property
     def valid(self):
