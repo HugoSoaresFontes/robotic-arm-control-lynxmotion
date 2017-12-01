@@ -1,7 +1,7 @@
 from hermes import Braco
 
 from PyQt5.QtCore import QDateTime, Qt, QTimer, QObject, pyqtSignal
-from PyQt5.QtGui import QIcon, QPixmap, QPainter, QPen
+from PyQt5.QtGui import QIcon, QPixmap, QPainter, QPen,  QColor, QFont
 from PyQt5.QtWidgets import (QApplication, QDialog, QDial, QGridLayout, QGroupBox,
     QHBoxLayout, QLabel, QPushButton, QSlider, QVBoxLayout, QWidget)
 
@@ -11,7 +11,7 @@ braco = Braco()
 
 def normalizar(pontos):
     # Amplitudes dos pontos [[x_min, x_max], [y_min, y_max]]
-    p_amplitudes = [[-45, 45], [0, 45]]
+    p_amplitudes = [[-10, 10], [0, 45]]
 
     x_dim = 270
     y_dim = 270
@@ -82,11 +82,11 @@ class Servo(object):
 
 class WidgetGallery(QDialog):
     # inicio do Densenho do tabuleiro
+
     def paintEvent(self, e):
         qp = QPainter()
         qp.begin(self)
         self.drawLines(qp)
-        qp.end()
 
     def drawLines(self, qp):
         #       p0           p1
@@ -99,11 +99,12 @@ class WidgetGallery(QDialog):
         #       |            |
         #       |            |
         #      p10          p11
-        pontos = [ [-15, 5], [15, 5],
-                    [-40, 15 ], [-15, 15], [15,  15], [40, 15],
-                    [-40, 25], [-15, 25], [15, 25], [40, 25],
-                    [-15, 35], [15, 35]
+        pontos = [ [-5, 5], [0, 5],
+                    [-10, 15 ], [-5, 15], [0,  15], [5, 15],
+                    [-10, 25], [-5, 25], [0, 25], [5, 25],
+                    [-5, 35], [0, 35]
                  ]
+
         pontos = normalizar(pontos)
         pen = QPen(Qt.black, 5, Qt.SolidLine)
 
@@ -130,6 +131,8 @@ class WidgetGallery(QDialog):
         qp.drawLine(pontos[6][0], pontos[6][1], pontos[7][0], pontos[7][1])
         qp.drawLine(pontos[7][0], pontos[7][1], pontos[8][0], pontos[8][1])
         qp.drawLine(pontos[8][0], pontos[8][1], pontos[9][0], pontos[9][1])
+
+
     # fim do Desenho do tabuleiro
 
     # Controles
