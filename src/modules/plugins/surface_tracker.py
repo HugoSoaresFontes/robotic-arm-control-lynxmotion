@@ -99,7 +99,6 @@ class Surface_Tracker(Plugin):
         self._last_mouse_pos = normalize(pos, self.g_pool.capture.frame_size, flip_y=True)
 
     def on_click(self, pos, button, action):
-        print(pos)
         if self.mode == 'Mostrar marcadores e superfícies':
             if action == glfw.PRESS:
                 for s in self.surfaces:

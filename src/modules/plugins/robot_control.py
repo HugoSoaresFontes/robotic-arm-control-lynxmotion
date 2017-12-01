@@ -220,6 +220,12 @@ class Robot_Control(Plugin):
             servo_menu.append(
                 ui.Slider('angulo_correcao', servo, min=-180, step=0.05, max=180 + 0.05, label='Ângulo de correção'))
 
+            servo_menu.append(
+                ui.Slider('s1', servo, min=0.1, step=0.01, max=1.0, label='Fator de escala positiva'))
+
+            servo_menu.append(
+                ui.Slider('s2', servo, min=0.1, step=0.01, max=1.0, label='Fator de escala negativa'))
+
             slider_min = ui.Slider('angulo_variacao_minimo', servo, step=0.05, min=-90,
                                    max=servo.angulo_variacao_maximo - 0.05,
                                    label="Âgulo mínimo de variação")

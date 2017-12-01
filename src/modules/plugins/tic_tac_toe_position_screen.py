@@ -188,7 +188,7 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
         return response
 
     def draw_targets(self):
-        if getattr(self, 'targets', None):
+        if getattr(self, 'targets', None) and self.draw_contours:
             for rect in self.targets:
                 draw_polyline(rect, color=RGBA(0.3, 0.1, 0.5, .8))
                 draw_polyline(rect, color=RGBA(0.3, 0.1, 0.5, .8), line_type=GL_POLYGON)

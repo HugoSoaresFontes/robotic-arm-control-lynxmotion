@@ -65,7 +65,7 @@ def main():
     default_capture_settings = {
         'frame_rate': 30,
         'frame_size': (1280, 720),
-        'preferred_names': ['Integrated_Webcam_HD']
+        'preferred_names': ['USB2.0 PC CAMERA']
     }
 
     default_plugins = [("Default_Source", default_capture_settings),
