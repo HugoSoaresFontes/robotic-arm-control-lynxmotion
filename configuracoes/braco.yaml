@@ -1,35 +1,36 @@
-HS-322HD:
-  angulo: 0.0
-  angulo_maximo: 40.5
-  angulo_minimo: -9.0
-  descricao: Servo da garra
-  porta: 4
-  velocidade_angular: 45.0
-HS-485HB:
-  angulo: 0.0
-  angulo_maximo: 39.959999999999994
-  angulo_minimo: -45.0
-  descricao: Servo da base
-  porta: 0
-  velocidade_angular: 45.0
-HS-645MG:
-  angulo: 0.0
-  angulo_maximo: 45.0
-  angulo_minimo: -45.0
-  descricao: Servo do punho
-  porta: 3
-  velocidade_angular: 45.0
-HS-755HB:
-  angulo: 0.0
-  angulo_maximo: 27.0
-  angulo_minimo: -18.0
-  descricao: Servo da cotovelo
-  porta: 2
-  velocidade_angular: 45.0
-HS-805BB:
-  angulo: 0.0
-  angulo_maximo: 22.5
-  angulo_minimo: -13.5
-  descricao: Servo do ombro
-  porta: 1
-  velocidade_angular: 45.0
+servos:
+  HS-322HD:
+    angulo: 0.0
+    angulo_maximo: 40.5
+    angulo_minimo: -9.0
+    descricao: Servo da garra
+    porta: 4
+    velocidade_angular: 45.0
+  HS-485HB:
+    angulo: 0.0
+    angulo_maximo: 39.959999999999994
+    angulo_minimo: -45.0
+    descricao: Servo da base
+    porta: 0
+    velocidade_angular: 45.0
+  HS-645MG:
+    angulo: 0.0
+    angulo_maximo: 45.0
+    angulo_minimo: -45.0
+    descricao: Servo do punho
+    porta: 3
+    velocidade_angular: 45.0
+  HS-755HB:
+    angulo: 0.0
+    angulo_maximo: 27.0
+    angulo_minimo: -18.0
+    descricao: Servo da cotovelo
+    porta: 2
+    velocidade_angular: 45.0
+  HS-805BB:
+    angulo: 0.0
+    angulo_maximo: 22.5
+    angulo_minimo: -13.5
+    descricao: Servo do ombro
+    porta: 1
+    velocidade_angular: 45.0
