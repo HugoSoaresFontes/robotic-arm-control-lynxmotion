@@ -12,7 +12,6 @@ import time
 from collections import deque
 from threading import Thread, Event
 
-
 def cauchy_schwarz_inequality(matriz: np.array):
     independentes = np.ones(matriz.shape[0], dtype=bool)
 
@@ -130,9 +129,11 @@ class Servo(object):
         # Inicia a velocidade para o servo se for especificada
         self.velocidade_angular = velocidade
         # Inicializa o ângulo inicial como 0
+
         self.angulo = (angulo_minimo + angulo_maximo) / 2
 
         self._lista_movimento = deque()
+        self.angulo = self.angulo_minimo
 
     def __repr__(self):
         return '<Servo {0}{5}: vel={1}°/s pos={2:.2f}° {3:.2f}°..{4:.2f}°>'.format(
@@ -436,7 +437,7 @@ class Servo(object):
         :param comando: str
         :return:
         """
-        parametros = re.match(r'#(?P<porta>\d+)P(?P<posicao>\d+)S(?P<velocidade>\d+)*$',
+        parametros = re.match(r'#(?P<porta>\d+)P(?P<posicao>\d+)S*(?P<velocidade>\d+)*$',
                               comando).groupdict(None)
 
         assert parametros, \
@@ -580,7 +581,7 @@ class SSC32(object):
         :param taxa_transferencia: Taxa de transferência da conexão serial
         :return:
         """
-        self._serial = serial.Serial(porta, taxa_transferencia)
+        self._serial = serial.Serial(porta, taxa_transferencia, exclusive=True)
         self._conectado = True
 
     def desconectar(self):
@@ -956,24 +957,38 @@ class Braco(SSC32, CinematicaMixin):
 
     @posicao_angular.setter
     def posicao_angular(self, posicao):
+        autocommit = self.autocommit
+        self.autocommit = False
+
         self.servos[0].angulo = posicao[0]
         self.servos[1].angulo = posicao[1]
         self.servos[2].angulo = posicao[2]
         self.servos[3].angulo = posicao[3]
 
-    def movimentar(self, posicao: tuple, velocidade: tuple=None):
+        if autocommit:
+            self.commit()
+            self.autocommit = autocommit
+
+    def movimentar(self, posicoes: tuple, velocidade: tuple=None):
         """
         Permite a movimentação
         :param posicao: Posição do servo
         """
-        self.posicao = posicao
-
         autocommit = self.autocommit
         self.autocommit = False
 
-        if autocommit:
-            self.commit()
-            self.autocommit = autocommit
+        for posicao in posicoes:
+            self.posicao = posicao
+
+            if autocommit:
+                self.commit()
+                self.autocommit = autocommit
+
+        # self.posicao = posicao
+
+        # if autocommit:
+        #     self.commit()
+        #     self.autocommit = autocommit
 
     @property
     def x(self) -> float:
@@ -984,7 +999,7 @@ class Braco(SSC32, CinematicaMixin):
 
     @x.setter
     def x(self, pos_x):
-        self.posicao = (pos_x, self.y, self.z, self.phi)
+        self.posicao = (pos_x, self.y, self.z, self.phi, self.theta)
 
     @property
     def y(self) -> float:
@@ -995,7 +1010,7 @@ class Braco(SSC32, CinematicaMixin):
 
     @y.setter
     def y(self, pos_y):
-        self.posicao = (self.x, pos_y, self.z, self.phi)
+        self.posicao = (self.x, pos_y, self.z, self.phi, self.theta)
 
     @property
     def z(self) -> float:
@@ -1006,7 +1021,7 @@ class Braco(SSC32, CinematicaMixin):
 
     @z.setter
     def z(self, pos_z):
-        self.posicao = (self.x, self.y, pos_z, self.phi)
+        self.posicao = (self.x, self.y, pos_z, self.phi, self.theta)
 
     @property
     def phi(self) -> float:
@@ -1017,7 +1032,7 @@ class Braco(SSC32, CinematicaMixin):
 
     @phi.setter
     def phi(self, pos_phi):
-        self.posicao = (self.x, self.y, self.z, pos_phi)
+        self.posicao = (self.x, self.y, self.z, pos_phi, self.theta)
 
     @property
     def theta(self) -> float:
@@ -1028,7 +1043,7 @@ class Braco(SSC32, CinematicaMixin):
 
     @theta.setter
     def theta(self, pos_theta):
-        self.servos[4].angulo = pos_theta
+        self.posicao = (self.x, self.y, self.z, self.phi, pos_theta)
 
     @property
     def velocidade_de_juntas(self):
@@ -1178,7 +1193,6 @@ class Braco(SSC32, CinematicaMixin):
             self.autocommit = autocommit
 
         return True
-
 
     def jacobiano(self):
         pass

@@ -13,23 +13,31 @@ prev_targets = []
 #     print(np.max(gray))
 #
 #     return np.array(gray * 255, dtype=np.uint8)
-
+i = 1
 def detect_circles(img, interval, min_radius=30):
+    global i
+    img = cv2.blur(img, (3, 3))
     img = cv2.inRange(img, interval[0], interval[1])
+
+    i += 1
 
     shape = img.shape
 
-    kernel = np.ones((5, 5), np.uint8)
+    kernel = np.ones((3, 3), np.uint8)
+    img = cv2.erode(img, kernel, iterations=1)
     img = cv2.dilate(img, kernel, iterations=6)
-    img = cv2.erode(img, kernel, iterations=6)
     # img = cv2.dilate(img, kernel, iterations=9)
 
-    # cv2.imshow("red", img)
+    cv2.imshow("red", img)
 
     img = cv2.Canny(img, 30, 100)
     _img, contours, hierarchy = cv2.findContours(img,
                                                  mode=cv2.RETR_TREE,
                                                  method=cv2.CHAIN_APPROX_SIMPLE, offset=(0, 0))
+    # hierarchy = hierarchy[0]
+    contours = np.array(contours)
+
+    # contours = contours[hierarchy[:, 2] >= 0]
     detected_circles = []
 
     for c in contours:
@@ -40,22 +48,28 @@ def detect_circles(img, interval, min_radius=30):
         if len(approx) > 5:
             ellipse = cv2.fitEllipse(approx)
             if ellipse[1][0] >= min_radius and ellipse[1][1] >= min_radius:
-                detected_circles.append(ellipse)
+                flag = True
+                for circle in detected_circles:
+                    if np.linalg.norm(np.array(circle[0]) - np.array(ellipse[0])) < 5:
+                        flag = False
+                if flag:
+                    detected_circles.append(ellipse)
 
     return detected_circles
 
 
-def detect_targets(img, min_radius=30):
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+def detect_targets(img, min_radius=20):
+    hsv = cv2.cvtColor(cv2.medianBlur(img, 3), cv2.COLOR_BGR2HSV)
     detected_targets = detect_circles(
         hsv,
-        (np.array([160, 100, 100]), np.array([190, 255, 255])),
-        min_radius=min_radius
-    ) + detect_circles(
-        hsv,
-        (np.array([45, 100, 100]), np.array([50, 255, 255])),
+        (np.array([165, 100, 100]), np.array([180, 255, 255])),
         min_radius=min_radius
     )
+    #                    + detect_circles(
+    #     hsv,
+    #     (np.array([45, 100, 100]), np.array([50, 255, 255])),
+    #     min_radius=min_radius
+    # )
 
     return detected_targets
 
@@ -84,9 +98,20 @@ def detect_targets_robust(img, min_radius=30, true_detect_every_frame=2):
 
 
 def bench():
-    cap = cv2.VideoCapture(0)
+    # cap = cv2.VideoCapture(0)
 
-    # frame = cv2.imread('/home/aluno/Imagens/alvos.png')
+    frame = cv2.imread('/home/aluno/tabuleiro.jpeg')
+
+    targets = detect_targets(frame)
+    draw_targets(targets, frame)
+    cv2.imshow('frame', frame)
+    cv2.waitKey(0)
+    cv2.waitKey(0)
+    cv2.waitKey(0)
+    cv2.waitKey(0)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
     #
     # hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     #
@@ -145,27 +170,27 @@ def bench():
     # # cv2.imshow('G', edges_G)
     # # cv2.imshow('B', B)
     #
-    while True:
-        # Capture frame-by-frame
-        ret, img = cap.read()
-        #
-        # gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        targets = detect_targets(img)
-        draw_targets(targets, img)
-
-        cv2.imshow('img', img)
-
-        if cv2.waitKey(1) == 27:
-            break
-
-        # for m in markers:
-        #     if 'img' in m:
-        #         cv2.imshow('id %s'%m['id'], m['img'])
-        #         cv2.imshow('otsu %s'%m['id'], m['otsu'])
     # while True:
+    #     # Capture frame-by-frame
+    #     ret, img = cap.read()
+    #     #
+    #     # gray_img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    #     targets = detect_targets(img)
+    #     draw_targets(targets, img)
+    #
+    #     cv2.imshow('img', img)
+    #
     #     if cv2.waitKey(1) == 27:
-    #         return
-    pass
+    #         break
+    #
+    #     # for m in markers:
+    #     #     if 'img' in m:
+    #     #         cv2.imshow('id %s'%m['id'], m['img'])
+    #     #         cv2.imshow('otsu %s'%m['id'], m['otsu'])
+    # # while True:
+    # #     if cv2.waitKey(1) == 27:
+    # #         return
+    # pass
 
 
 if __name__ == '__main__':

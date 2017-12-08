@@ -1,19 +1,22 @@
 import logging
+import math
 import os
-import glfw
+
 import cv2
+import numpy as np
+from OpenGL.GL import GL_POLYGON
 from pyglui import ui
 from pyglui.cygl.utils import draw_points_norm, draw_polyline, draw_polyline_norm, RGBA
-from hermes import Braco
-from plugin import Plugin
-from methods import normalize, denormalize
-from OpenGL.GL import GL_POLYGON
-import numpy as np
 from scipy.spatial import Delaunay
-import math
-from object_detect import detect_targets, draw_targets, detect_targets_robust
 
+import glfw
 from file_methods import Persistent_Dict
+from methods import normalize, denormalize
+from object_detect import detect_targets_robust
+from plugin import Plugin
+
+from src.modules.sniffer import sniffer
+import matplotlib.pyplot as plt
 
 logger = logging.getLogger(__name__)
 
@@ -87,6 +90,7 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
 
     def on_click(self, pos, button, action):
         if action == glfw.PRESS:
+            print('click pos', pos)
             for i, point in enumerate(self.points):
 
                 if np.linalg.norm(
@@ -101,10 +105,13 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
             self.mouse_released = False
             self._last_mouse_click_pos = normalize(pos, self.g_pool.capture.frame_size, flip_y=True)
 
+            print('click', self._last_mouse_click_pos)
+
             if self.move_robot and self.move_to_target_when_click:
                 for i, target in enumerate(self.targets):
                     aux = Delaunay(target)
                     if aux.find_simplex(pos) >= 0:
+                        print(i, self._unnormalized_targets[i], np.mean(target, axis=0))
                         self.to_target = True
                         # self._last_mouse_click_pos = normalize(self._unnormalized_targets[i][0][-1::-1], self.g_pool.capture.frame_size, flip_y=True)
                         self.move_to_target_when_click = False
@@ -137,6 +144,7 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
                 rect.append([fator[0] * x, fator[1] * y])
 
             self.targets.append(rect)
+
         self.img_shape = frame.height, frame.width, 3
 
     @property
@@ -192,6 +200,35 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
             for rect in self.targets:
                 draw_polyline(rect, color=RGBA(0.3, 0.1, 0.5, .8))
                 draw_polyline(rect, color=RGBA(0.3, 0.1, 0.5, .8), line_type=GL_POLYGON)
+
+    def norm_pos_to_robot(self, pos):
+        pos_e = np.array(normalize(pos, self.g_pool.capture.frame_size, flip_y=True))
+        shape = pos_e.shape
+        # pos_e.shape = (-1, 1, 2)
+
+        pos_r = None
+        poss_g = []
+        for i, matrix in enumerate(self.perspective_matrices):
+            # pos = cv2.perspectiveTransform(pos_e, matrix)
+            # pos.shape = shape
+
+            pos_g = np.array(pos_e, np.float32)
+            pos_g.shape = (-1, 1, 2)
+            pos_g = cv2.perspectiveTransform(pos_g, self.inverse_perspective_matrices[i])
+            pos_g.shape = shape
+
+            aux = Delaunay(self.rects[i])
+            if aux.find_simplex(pos_e) >= 0:
+                print('entrou')
+                pos_r = pos_g
+            else:
+                poss_g.append(pos_g)
+
+        if len(poss_g) == len(self.rects):
+            pos_r = np.mean(poss_g, axis=0)
+
+        return pos_r, len(poss_g) != len(self.rects)
+
 
     def draw_pos(self, show_pen=False):
         poss = []
@@ -254,35 +291,132 @@ class Tic_Tac_Toe_Position_Screen(Plugin):
     def update_move(self, pos):
         changed = False
 
-        if self.move_robot:
-            for id, rect in enumerate(self.rects):
-                aux = Delaunay(rect)
-                if aux.find_simplex(pos) >= 0 and self.move_robot:
-                    self._id_rect = id
-                    changed = True
-                    break
+        # if not self.move_robot:
+        #     return
 
-            if changed and not self.mouse_released:
-                self._last_move_point_pos = self._last_mouse_pos
-                pos = np.array(self._last_mouse_pos, np.float32)
-                shape = pos.shape
-                pos.shape = (-1, 1, 2)
+        for id, rect in enumerate(self.rects):
+            aux = Delaunay(rect)
+            if aux.find_simplex(pos) >= 0 and self.move_robot:
+                self._id_rect = id
+                changed = True
 
-                pos = cv2.perspectiveTransform(pos, self.inverse_perspective_matrices[self._id_rect])
-                pos.shape = shape
+        if not changed and not self.mouse_released and getattr(self, 'to_target', None) is not None:
+            self.target_frame_pos = denormalize(pos, self.g_pool.capture.frame_size, flip_y=True)
 
-                if getattr(self, 'to_target', None) is not None:
-                    self.abrir()
-                    self.g_pool.braco.posicao = (pos[1], pos[0], self.move_robot_z + 4, self.move_robot_phi)
-                else:
-                    posicao = self.g_pool.braco.posicao
-                    self.g_pool.braco.posicao = (posicao[0], posicao[1], posicao[2] + 4, posicao[3])
+        if changed and not self.mouse_released:
+            self._last_move_point_pos = self._last_mouse_pos
+            pos = np.array(self._last_mouse_pos, np.float32)
+            shape = pos.shape
+            pos.shape = (-1, 1, 2)
 
-                self.g_pool.braco.posicao = (pos[1], pos[0], self.move_robot_z, self.move_robot_phi)
+            pos = cv2.perspectiveTransform(pos, self.inverse_perspective_matrices[self._id_rect])
+            pos.shape = shape
+            #
+            # if self.move_robot:
+            #     )
 
-                if getattr(self, 'to_target', None) is not None:
-                    self.fechar()
-                    self.to_target = None
+            if self.move_robot and self.consider_obstacles and self.move_to_target_when_click and changed:
+                pos_m = None
+
+                if getattr(self, '_unnormalized_targets', None):
+                    target = None
+                    definitions = []
+                    for i, rect in enumerate(self._unnormalized_targets):
+                        pos_r, in_tic_tac_toe_matrix = self.norm_pos_to_robot(np.mean(self.targets[i], axis=0))
+                        # print(pos_r, in_tic_tac_toe_matrix)
+
+                        if not in_tic_tac_toe_matrix and not target and rect[0][1] < 300:
+                            target = self.targets[i]
+                            pos_m = pos_r
+                        elif in_tic_tac_toe_matrix:
+                            definitions.append(self.targets[i])
+
+                    if target:
+                        pin = np.mean(target, axis=0)
+                        print("pin", pin)
+                        obstacles = []
+                        for definition in definitions:
+                            obstacles += [np.mean(definition, axis=0)]
+
+
+                        tab = sniffer(700, 700)
+
+                        # goal
+                        xg, yg = denormalize(self._last_mouse_click_pos, flip_y=True, size=self.g_pool.capture.frame_size)
+                        tab.setCircularGoal(x0=int(xg), y0=int(yg), r=20)
+                        tab.setGoal(x=int(xg), y=int(yg), r=20)
+
+                        for obstacle in obstacles:
+                            tab.setCircularObstacle(x0=int(obstacle[0]),
+                                                    y0=int(obstacle[1]), r=75)
+
+                        x, y = tab.Sniff(i_max=1000, x0=int(pin[0]), y0=int(pin[1]), step=2, max_step=30)
+                        print("Goal found in: x=" + str(x[-1]) + " y=" + str(y[-1]))
+                        print("Steps of the way found", len(x))
+                        print("Optimizing the way")
+                        opx, opy = tab.wayOptimize(x, y)
+                        print("Steps of the way found: ", len(opx))
+
+                        print('pos', pos_m)
+
+                        # self.abrir()
+                        # self.g_pool.braco.posicao = (pos_m[1], pos_m[0], self.move_robot_z + 4, self.move_robot_phi)
+                        #
+                        # self.g_pool.braco.posicao = (pos_m[1], pos_m[0], self.move_robot_z, self.move_robot_phi)
+                        # self.fechar()
+                        #
+                        # for i, x in enumerate(opx):
+                        #     y = opy[i]
+                        #
+                        #     pos, _ = self.norm_pos_to_robot(np.array([x, y]))
+                        #     try:
+                        #         self.g_pool.braco.posicao = (pos[1], pos[0], self.move_robot_z + 3, self.move_robot_phi)
+                        #     except Exception as e:
+                        #         print(e)
+
+
+                        from mpl_toolkits.mplot3d import Axes3D
+                        # cm = plt.cm.YlOrRd
+                        cm = plt.cm.Greys
+
+                        fig = plt.figure(figsize=(14, 8))
+                        ax = Axes3D(fig)
+                        ax.plot(x, y, 0, 'r--', label="Way", alpha=0.5)
+                        ax.plot(opx, opy, 0, 'b', label="Optimized Way", alpha=0.5)
+                        ax.plot_surface(tab.X, tab.Y, tab.potential, cmap=cm, alpha=1)
+                        ax.set_xlabel('y', fontsize=15)
+                        ax.set_ylabel('x', fontsize=15)
+                        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+                        for angle in range(0, 360, 6):
+                            ax.view_init(30, angle)
+                            plt.draw()
+                            plt.pause(.0001)
+
+                        fig = plt.figure(figsize=(14, 8))
+                        ax = fig.add_subplot(111)
+                        ax.contourf(tab.X, tab.Y, tab.potential, cmap=cm)
+                        ax.plot(x, y, 'r--', linewidth=2, label="Way")
+                        ax.plot(opx, opy, 'b', linewidth=2, label="Optimized Way")
+                        ax.set_xlabel('y')
+                        ax.set_ylabel('x')
+                        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+                        plt.show()
+
+                        return
+
+            if getattr(self, 'to_target', None) is not None:
+                self.abrir()
+                self.g_pool.braco.posicao = (pos[1], pos[0], self.move_robot_z + 4, self.move_robot_phi)
+            else:
+                posicao = self.g_pool.braco.posicao
+                self.g_pool.braco.posicao = (posicao[0], posicao[1], posicao[2] + 4, posicao[3])
+
+            self.g_pool.braco.posicao = (pos[1], pos[0], self.move_robot_z, self.move_robot_phi)
+
+            if getattr(self, 'to_target', None) is not None:
+                self.fechar()
+                self.to_target = None
 
     def abrir(self):
         self.g_pool.braco.servos[4].angulo = self.g_pool.braco.angulo_garra_soltar

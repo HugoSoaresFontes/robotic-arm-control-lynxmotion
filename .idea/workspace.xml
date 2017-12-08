@@ -2,10 +2,16 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="424240d1-5d72-4e4d-8ddb-a70584822c83" name="Default" comment="l">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/cinematica-direta.mp4" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/outpy.avi" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/static/Sniffing.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sniffer_example.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/modules/sniffer.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/tutorial.ipynb" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/interface.py" afterPath="$PROJECT_DIR$/interface.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/hermes.py" afterPath="$PROJECT_DIR$/src/modules/hermes.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/object_detect.py" afterPath="$PROJECT_DIR$/src/modules/object_detect.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/plugins/robot_control.py" afterPath="$PROJECT_DIR$/src/modules/plugins/robot_control.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/modules/plugins/tic_tac_toe_position_screen.py" afterPath="$PROJECT_DIR$/src/modules/plugins/tic_tac_toe_position_screen.py" />
     </list>
     <ignored path="$PROJECT_DIR$/.idea/" />
@@ -18,9 +24,10 @@
   </component>
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/robotica$interface.coverage" NAME="interface Coverage Results" MODIFIED="1511086867691" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/testes" />
-    <SUITE FILE_PATH="coverage/robotica$main.coverage" NAME="main Coverage Results" MODIFIED="1512149673180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
-    <SUITE FILE_PATH="coverage/robotica$object_detect.coverage" NAME="object_detect Coverage Results" MODIFIED="1512134596400" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/modules" />
+    <SUITE FILE_PATH="coverage/robotica$main.coverage" NAME="main Coverage Results" MODIFIED="1512737207560" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src" />
+    <SUITE FILE_PATH="coverage/robotica$object_detect.coverage" NAME="object_detect Coverage Results" MODIFIED="1512731783540" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/src/modules" />
     <SUITE FILE_PATH="coverage/robotica$teste.coverage" NAME="teste Coverage Results" MODIFIED="1510251506324" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/robotica$sniffer_example.coverage" NAME="sniffer_example Coverage Results" MODIFIED="1512731470881" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/robotica$gui.coverage" NAME="gui Coverage Results" MODIFIED="1509592884184" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/robotica$interface_plugins.coverage" NAME="interface_plugins Coverage Results" MODIFIED="1511304082059" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/testes" />
     <SUITE FILE_PATH="coverage/robotica$square_marker_detect.coverage" NAME="square_marker_detect Coverage Results" MODIFIED="1511112215580" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
@@ -43,39 +50,23 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-4029">
-              <caret line="4" column="5" lean-forward="false" selection-start-line="4" selection-start-column="5" selection-end-line="4" selection-end-column="5" />
-              <folding />
+            <state relative-caret-position="543">
+              <caret line="246" column="10" lean-forward="false" selection-start-line="246" selection-start-column="10" selection-end-line="246" selection-end-column="10" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="surface_backend.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/modules/video_capture/surface_backend.py">
+      <file leaf-file-name="sniffer.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/modules/sniffer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3546">
-              <caret line="201" column="48" lean-forward="false" selection-start-line="201" selection-start-column="47" selection-end-line="201" selection-end-column="48" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="reference_surface.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/modules/reference_surface.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8370">
-              <caret line="491" column="16" lean-forward="false" selection-start-line="491" selection-start-column="16" selection-end-line="491" selection-end-column="29" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="surface_tracker.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/modules/plugins/surface_tracker.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1530">
-              <caret line="100" column="44" lean-forward="false" selection-start-line="100" selection-start-column="44" selection-end-line="100" selection-end-column="44" />
-              <folding />
+            <state relative-caret-position="-301">
+              <caret line="190" column="8" lean-forward="false" selection-start-line="190" selection-start-column="8" selection-end-line="190" selection-end-column="8" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -83,19 +74,12 @@
       <file leaf-file-name="tic_tac_toe_position_screen.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/modules/plugins/tic_tac_toe_position_screen.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="108" column="30" lean-forward="false" selection-start-line="108" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="robot_control.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/modules/plugins/robot_control.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="6282">
-              <caret line="358" column="74" lean-forward="false" selection-start-line="354" selection-start-column="4" selection-end-line="358" selection-end-column="74" />
-              <folding />
+            <state relative-caret-position="270">
+              <caret line="403" column="34" lean-forward="true" selection-start-line="376" selection-start-column="0" selection-end-line="403" selection-end-column="34" />
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+                <marker date="1512737044931" expanded="true" signature="13107:13718" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -103,8 +87,8 @@
       <file leaf-file-name="hermes.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/modules/hermes.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3834">
-              <caret line="225" column="11" lean-forward="false" selection-start-line="225" selection-start-column="11" selection-end-line="225" selection-end-column="11" />
+            <state relative-caret-position="112">
+              <caret line="803" column="0" lean-forward="false" selection-start-line="803" selection-start-column="0" selection-end-line="803" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -113,18 +97,18 @@
       <file leaf-file-name="object_detect.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/modules/object_detect.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1044">
-              <caret line="60" column="0" lean-forward="false" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
+            <state relative-caret-position="385">
+              <caret line="111" column="18" lean-forward="false" selection-start-line="111" selection-start-column="18" selection-end-line="111" selection-end-column="18" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="square_marker_detect.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/modules/square_marker_detect.py">
+      <file leaf-file-name="sniffer_example.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sniffer_example.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2808">
-              <caret line="161" column="108" lean-forward="false" selection-start-line="161" selection-start-column="12" selection-end-line="161" selection-end-column="108" />
+            <state relative-caret-position="0">
+              <caret line="0" column="23" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -141,17 +125,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>recent_eve</find>
-      <find>cleanup</find>
-      <find>Attempting to reinit</find>
-      <find>Loading</find>
-      <find>plugin</find>
-      <find>get</find>
-      <find>frame_rate</find>
-      <find>self.targets</find>
-      <find>_unnormalized_targets</find>
-      <find>target</find>
-      <find>print_detecte_values</find>
       <find>p</find>
       <find>__dict__</find>
       <find>_correcao</find>
@@ -168,14 +141,26 @@
       <find>correcao_r</find>
       <find>posicao</find>
       <find>self._a</find>
-      <find>print</find>
       <find>when_cli</find>
       <find>to_target</find>
+      <find>print</find>
+      <find>targets</find>
+      <find>denormalize</find>
+      <find>inverse_perspective_matrices</find>
+      <find>nao</find>
+      <find>deno</find>
+      <find>in_</find>
+      <find>pos_g</find>
+      <find>imread</find>
+      <find>contai</find>
+      <find>draw_</find>
+      <find>round</find>
     </findStrings>
     <replaceStrings>
       <replace>controlador_ssc32</replace>
       <replace>rect</replace>
       <replace>b</replace>
+      <replace>int</replace>
     </replaceStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/testes/modules</dir>
@@ -189,8 +174,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/gui.py" />
-        <option value="$PROJECT_DIR$/interface.py" />
         <option value="$PROJECT_DIR$/glfw.py" />
         <option value="$PROJECT_DIR$/teste_opengl.py" />
         <option value="$PROJECT_DIR$/testes/interface.py" />
@@ -235,10 +218,12 @@
         <option value="$PROJECT_DIR$/src/modules/video_capture/uvc_backend.py" />
         <option value="$PROJECT_DIR$/src/modules/video_capture/default_backend.py" />
         <option value="$PROJECT_DIR$/src/modules/plugins/surface_tracker.py" />
-        <option value="$PROJECT_DIR$/src/modules/object_detect.py" />
         <option value="$PROJECT_DIR$/src/main.py" />
-        <option value="$PROJECT_DIR$/src/modules/hermes.py" />
         <option value="$PROJECT_DIR$/src/modules/plugins/robot_control.py" />
+        <option value="$PROJECT_DIR$/src/modules/hermes.py" />
+        <option value="$PROJECT_DIR$/sniffer_example.py" />
+        <option value="$PROJECT_DIR$/src/modules/sniffer.py" />
+        <option value="$PROJECT_DIR$/src/modules/object_detect.py" />
         <option value="$PROJECT_DIR$/src/modules/plugins/tic_tac_toe_position_screen.py" />
       </list>
     </option>
@@ -270,6 +255,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="Scratches" />
       <pane id="ProjectPane">
         <subPane>
@@ -296,25 +282,17 @@
               <item name="modules" type="462c0819:PsiDirectoryNode" />
               <item name="plugins" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="robotica" type="b2602c69:ProjectViewProjectNode" />
-              <item name="robotica" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="modules" type="462c0819:PsiDirectoryNode" />
-              <item name="video_capture" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
-    <property name="SearchEverywhereHistoryKey" value="ter&#9;ACTION&#9;ActivateTerminalToolWindow&#10;te&#9;ACTION&#9;ActivateTerminalToolWindow&#10;py&#9;ACTION&#9;ActivatePythonConsoleToolWindow&#10;pyth&#9;ACTION&#9;ActivatePythonConsoleToolWindow&#10;pyt&#9;ACTION&#9;ActivatePythonConsoleToolWindow&#10;python&#9;ACTION&#9;ActivatePythonConsoleToolWindow&#10;p&#9;ACTION&#9;ActivateProjectToolWindow&#10;importa&#9;null&#9;null&#10;posicao&#9;null&#9;null" />
+    <property name="SearchEverywhereHistoryKey" value="TER&#9;ACTION&#9;ActivateTerminalToolWindow&#10;ter&#9;ACTION&#9;ActivateTerminalToolWindow&#10;te&#9;ACTION&#9;ActivateTerminalToolWindow&#10;py&#9;ACTION&#9;ActivatePythonConsoleToolWindow&#10;pyth&#9;ACTION&#9;ActivatePythonConsoleToolWindow&#10;pyt&#9;ACTION&#9;ActivatePythonConsoleToolWindow&#10;python&#9;ACTION&#9;ActivatePythonConsoleToolWindow&#10;p&#9;ACTION&#9;ActivateProjectToolWindow&#10;importa&#9;null&#9;null&#10;posicao&#9;null&#9;null" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
@@ -484,24 +462,6 @@
       <option name="_new_targetType" value="&quot;PATH&quot;" />
       <method />
     </configuration>
-    <configuration name="interface" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/testes" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <module name="robotic-arm-control-lynxmotion" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/testes/interface.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-    </configuration>
     <configuration name="interface_plugins" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -556,6 +516,24 @@
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
     </configuration>
+    <configuration name="sniffer_example" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="robotic-arm-control-lynxmotion" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/sniffer_example.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+    </configuration>
     <configuration name="square_marker_detect" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -576,18 +554,18 @@
     </configuration>
     <list size="5">
       <item index="0" class="java.lang.String" itemvalue="Python.square_marker_detect" />
-      <item index="1" class="java.lang.String" itemvalue="Python.interface" />
-      <item index="2" class="java.lang.String" itemvalue="Python.interface_plugins" />
-      <item index="3" class="java.lang.String" itemvalue="Python.main" />
-      <item index="4" class="java.lang.String" itemvalue="Python.object_detect" />
+      <item index="1" class="java.lang.String" itemvalue="Python.interface_plugins" />
+      <item index="2" class="java.lang.String" itemvalue="Python.main" />
+      <item index="3" class="java.lang.String" itemvalue="Python.object_detect" />
+      <item index="4" class="java.lang.String" itemvalue="Python.sniffer_example" />
     </list>
     <recent_temporary>
       <list size="5">
         <item index="0" class="java.lang.String" itemvalue="Python.main" />
         <item index="1" class="java.lang.String" itemvalue="Python.object_detect" />
-        <item index="2" class="java.lang.String" itemvalue="Python.interface_plugins" />
-        <item index="3" class="java.lang.String" itemvalue="Python.square_marker_detect" />
-        <item index="4" class="java.lang.String" itemvalue="Python.interface" />
+        <item index="2" class="java.lang.String" itemvalue="Python.sniffer_example" />
+        <item index="3" class="java.lang.String" itemvalue="Python.interface_plugins" />
+        <item index="4" class="java.lang.String" itemvalue="Python.square_marker_detect" />
       </list>
     </recent_temporary>
   </component>
@@ -625,17 +603,16 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="214" y="24" width="1377" height="912" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36872727" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.368" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="13" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34962407" sideWeight="0.42327273" order="9" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34962407" sideWeight="0.5767273" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.43984962" sideWeight="0.46327272" order="9" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.43984962" sideWeight="0.53672725" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16066065" sideWeight="0.6479631" order="11" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44360903" sideWeight="0.6407273" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.45795795" sideWeight="0.48828697" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Data View" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -690,19 +667,11 @@
           <option name="timeStamp" value="11" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="15" />
+      <option name="time" value="18" />
     </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/modules/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.virtualenvs/robotica/lib/python3.5/site-packages/OpenGL/GL/VERSION/GL_1_0.py" />
     <entry file="file://$USER_HOME$/LAIS/mimico/contrib/script.py" />
     <entry file="file://$USER_HOME$/.PyCharm2017.2/system/python_stubs/1614245156/pyglui/cygl/utils.py" />
     <entry file="file://$USER_HOME$/.PyCharm2017.2/system/python_stubs/1614245156/pyglui/ui.py" />
@@ -798,13 +767,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/teste.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="324">
-          <caret line="18" column="12" lean-forward="false" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/teste.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="126">
@@ -824,13 +786,6 @@
         <state relative-caret-position="390">
           <caret line="1046" column="8" lean-forward="false" selection-start-line="1046" selection-start-column="8" selection-end-line="1046" selection-end-column="8" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm2017.2/system/python_stubs/996144719/cv2/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="83934">
-          <caret line="4700" column="4" lean-forward="false" selection-start-line="4700" selection-start-column="4" selection-end-line="4700" selection-end-column="4" />
         </state>
       </provider>
     </entry>
@@ -867,7 +822,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="468">
           <caret line="32" column="17" lean-forward="false" selection-start-line="32" selection-start-column="6" selection-end-line="32" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -906,9 +860,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1926">
           <caret line="116" column="12" lean-forward="false" selection-start-line="116" selection-start-column="14" selection-end-line="121" selection-end-column="28" />
-          <folding>
-            <element signature="e#379#393#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -916,31 +867,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="3546">
           <caret line="201" column="48" lean-forward="false" selection-start-line="201" selection-start-column="47" selection-end-line="201" selection-end-column="48" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/modules/reference_surface.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8370">
-          <caret line="491" column="16" lean-forward="false" selection-start-line="491" selection-start-column="16" selection-end-line="491" selection-end-column="29" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/modules/plugins/surface_tracker.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1530">
-          <caret line="100" column="44" lean-forward="false" selection-start-line="100" selection-start-column="44" selection-end-line="100" selection-end-column="44" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/modules/square_marker_detect.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2808">
-          <caret line="161" column="108" lean-forward="false" selection-start-line="161" selection-start-column="12" selection-end-line="161" selection-end-column="108" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -951,43 +877,105 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/modules/object_detect.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1044">
-          <caret line="60" column="0" lean-forward="false" selection-start-line="60" selection-start-column="0" selection-end-line="60" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/modules/hermes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3834">
-          <caret line="225" column="11" lean-forward="false" selection-start-line="225" selection-start-column="11" selection-end-line="225" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/modules/plugins/robot_control.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="6282">
+        <state relative-caret-position="390">
           <caret line="358" column="74" lean-forward="false" selection-start-line="354" selection-start-column="4" selection-end-line="358" selection-end-column="74" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/reference_surface.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="18">
+          <caret line="491" column="16" lean-forward="false" selection-start-line="491" selection-start-column="16" selection-end-line="491" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/plugins/surface_tracker.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="100" column="44" lean-forward="false" selection-start-line="100" selection-start-column="44" selection-end-line="100" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/teste.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="324">
+          <caret line="18" column="12" lean-forward="false" selection-start-line="18" selection-start-column="12" selection-end-line="18" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/square_marker_detect.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="390">
+          <caret line="172" column="4" lean-forward="false" selection-start-line="172" selection-start-column="4" selection-end-line="173" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm2017.2/system/python_stubs/996144719/cv2/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="4335" column="9" lean-forward="true" selection-start-line="4335" selection-start-column="0" selection-end-line="4336" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sniffer_example.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="23" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/object_detect.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="385">
+          <caret line="111" column="18" lean-forward="false" selection-start-line="111" selection-start-column="18" selection-end-line="111" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-4029">
-          <caret line="4" column="5" lean-forward="false" selection-start-line="4" selection-start-column="5" selection-end-line="4" selection-end-column="5" />
+        <state relative-caret-position="543">
+          <caret line="246" column="10" lean-forward="false" selection-start-line="246" selection-start-column="10" selection-end-line="246" selection-end-column="10" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/hermes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="803" column="0" lean-forward="false" selection-start-line="803" selection-start-column="0" selection-end-line="803" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/sniffer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-301">
+          <caret line="190" column="8" lean-forward="false" selection-start-line="190" selection-start-column="8" selection-end-line="190" selection-end-column="8" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/modules/plugins/tic_tac_toe_position_screen.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="108" column="30" lean-forward="false" selection-start-line="108" selection-start-column="0" selection-end-line="109" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="270">
+          <caret line="403" column="34" lean-forward="true" selection-start-line="376" selection-start-column="0" selection-end-line="403" selection-end-column="34" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+            <marker date="1512737044931" expanded="true" signature="13107:13718" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
